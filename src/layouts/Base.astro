@@ -24,7 +24,7 @@ const { title, description, ogImage = "/og/og-default.jpg", noindex: pageNoindex
 // Kanonická adresa vychází z nastavení site + base (vlastní doména i GitHub Pages).
 const origin = (Astro.site ?? new URL(site.url)).origin;
 const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "") || "/";
-const isRoot = path === "/" || path === import.meta.env.BASE_URL || path + "/" === import.meta.env.BASE_URL;
+const isRoot = path === "/" || path.replace(/\/$/, "") === import.meta.env.BASE_URL.replace(/\/$/, "");
 const canonical = origin + (isRoot ? link("/") : path.replace(/\/$/, ""));
 const og = origin + link(ogImage);
 // PUBLIC_NOINDEX=1 schová celý web před vyhledávači (náhled na GitHub Pages bez vlastní domény).
