@@ -175,6 +175,31 @@ button, [role="button"], summary, .btn {
 .btn-dark { background: var(--color-night); color: var(--color-ink); }
 .btn-paper { background: var(--color-paper); color: var(--color-night); }
 
+/* Odlesk při stisku (třídu is-zap přidává scripts/spark.ts) */
+.btn { position: relative; overflow: hidden; isolation: isolate; }
+.btn::after {
+  content: ""; position: absolute; top: -4px; bottom: -4px; left: 0; width: 28%; z-index: -1;
+  background: rgb(255 255 255 / 0.5); transform: translateX(-180%) skewX(-20deg); opacity: 0; pointer-events: none;
+}
+.btn-ghost::after, .btn-dark::after { background: rgb(254 202 20 / 0.35); }
+.btn.is-zap::after { animation: btn-zap 520ms var(--ease-out); }
+@keyframes btn-zap {
+  from { opacity: 1; transform: translateX(-180%) skewX(-20deg); }
+  to { opacity: 1; transform: translateX(460%) skewX(-20deg); }
+}
+
+/* Jiskra v místě kliknutí */
+.spk-layer { position: fixed; inset: 0; z-index: 9999; pointer-events: none; overflow: hidden; contain: strict; }
+.spk { position: absolute; left: 0; top: 0; width: 0; height: 0; --spk: var(--color-hey); --spk-hot: #fff6cc; }
+.spk--dark { --spk: var(--color-night); --spk-hot: var(--color-night); }
+.spk > i { position: absolute; display: block; }
+.spk__core { left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--spk-hot); box-shadow: 0 0 10px 3px var(--spk); } /* taste-skill-ignore: záře jiskry, prvek žije půl sekundy */
+.spk--dark .spk__core { background: var(--color-hey); outline: 2px solid var(--color-night); }
+.spk__ring { left: -30px; top: -30px; width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--spk); }
+.spk__ray { left: 0; top: -1px; width: 15px; height: 2px; border-radius: 2px; background: var(--spk); transform-origin: 0 50%; }
+.spk__bolts { position: absolute; left: -40px; top: -40px; width: 80px; height: 80px; overflow: visible; }
+.spk__bolts path { fill: none; stroke: var(--spk); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+
 @media (hover: hover) and (pointer: fine) {
   .btn-hey:hover { background: #ffd84d; }
   .btn-ghost:hover { background: #2c3846; }

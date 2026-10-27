@@ -25,7 +25,7 @@ export function organizationSchema() {
     logo: `${site.url}/brand/logo-stacked-light.png`,
     image: `${site.url}/og/og-default.jpg`,
     description:
-      "Kamerové systémy Dahua a Hikvision, zabezpečení Jablotron, rozvaděče, elektroinstalace, revize, wallboxy, datové sítě a videotelefony. Sídlo v Zábřehu, působnost v Olomouckém kraji, ve východních Čechách, v Opavě a Ostravě.",
+      "Elektroinstalace, rozvaděče, revize a hromosvody, wallboxy, kamerové systémy Dahua a Hikvision, alarmy Jablotron, datové sítě a videotelefony. Sídlo v Zábřehu, působnost v Olomouckém kraji, ve východních Čechách, v Opavě a Ostravě.",
     telephone: site.phone.e164,
     email: site.email,
     vatID: site.dic ?? undefined,
@@ -42,7 +42,7 @@ export function organizationSchema() {
     geo: { "@type": "GeoCoordinates", latitude: site.geo.lat, longitude: site.geo.lng },
     hasMap: site.mapsUrl,
     areaServed,
-    knowsAbout: ["Kamerové systémy", "Jablotron", "Dahua", "Hikvision", "Elektrické rozvaděče", "Elektroinstalace", "Revize elektro", "Hromosvody", "Wallboxy", "Datové sítě"],
+    knowsAbout: ["Elektroinstalace", "Elektrické rozvaděče", "Revize elektro", "Hromosvody", "Wallboxy", "Kamerové systémy", "Jablotron", "Dahua", "Hikvision", "Datové sítě"],
     hasCredential: site.certifications.map((c) => ({ "@type": "EducationalOccupationalCredential", name: c })),
     ...(site.hours ? { openingHours: site.hours.schema } : {}),
     ...(site.social.length ? { sameAs: site.social.map((s) => s.url) } : {}),

@@ -1,7 +1,9 @@
 ---
 import { link, stripBase } from "../lib/url";
 import { site } from "../data/site";
-import { focusServices, otherServices } from "../data/services";
+import { serviceGroups, servicesIn } from "../data/services";
+import { serviceIcon } from "../lib/icons";
+import Icon from "./Icon.astro";
 import logo from "../assets/brand/logo-horizontal-dark.svg?raw";
 import { inlineSvg } from "../lib/svg";
 
@@ -32,24 +34,21 @@ const logoSvg = inlineSvg(logo, "hdr");
             <svg width="12" height="8" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"></path></svg>
           </button>
           <div class="hdr__menu" id="menu-sluzby" data-menu hidden>
-            <div class="hdr__menu-col">
-              <p class="hdr__menu-title">Specializace</p>
-              {focusServices.map((s) => (
-                <a href={link(`/sluzby/${s.slug}`)} class="hdr__menu-item">
-                  <span class="hdr__menu-name">{s.name}</span>
-                  <span class="hdr__menu-desc">{s.short}</span>
-                </a>
-              ))}
-            </div>
-            <div class="hdr__menu-col">
-              <p class="hdr__menu-title">Další služby</p>
-              {otherServices.map((s) => (
-                <a href={link(`/sluzby/${s.slug}`)} class="hdr__menu-item hdr__menu-item--compact">
-                  <span class="hdr__menu-name">{s.name}</span>
-                </a>
-              ))}
-              <a href={link("/sluzby")} class="hdr__menu-all link-u">Přehled všech služeb</a>
-            </div>
+            {serviceGroups.map((g) => (
+              <div class="hdr__menu-col">
+                <p class="hdr__menu-title">{g.name}</p>
+                {servicesIn(g.id).map((s) => (
+                  <a href={link(`/sluzby/${s.slug}`)} class="hdr__menu-item">
+                    <span class="hdr__menu-icon"><Icon name={serviceIcon[s.slug]} size={22} /></span>
+                    <span class="hdr__menu-text">
+                      <span class="hdr__menu-name">{s.name}</span>
+                      <span class="hdr__menu-desc">{s.short}</span>
+                    </span>
+                  </a>
+                ))}
+              </div>
+            ))}
+            <a href={link("/sluzby")} class="hdr__menu-all">Přehled všech služeb <Icon name="arrow" size={16} /></a>
           </div>
         </li>
         {links.map((l) => (
@@ -70,14 +69,16 @@ const logoSvg = inlineSvg(logo, "hdr");
 
   <div class="mnav" id="mobile-menu" data-mobile-menu hidden>
     <nav class="wrap" aria-label="Mobilní navigace">
-      <p class="mnav__title">Specializace</p>
-      <ul class="mnav__big">
-        {focusServices.map((s) => <li><a href={link(`/sluzby/${s.slug}`)}>{s.name}</a></li>)}
-      </ul>
-      <p class="mnav__title">Další služby</p>
-      <ul class="mnav__small">
-        {otherServices.map((s) => <li><a href={link(`/sluzby/${s.slug}`)}>{s.name}</a></li>)}
-      </ul>
+      {serviceGroups.map((g) => (
+        <Fragment>
+          <p class="mnav__title">{g.name}</p>
+          <ul class="mnav__big">
+            {servicesIn(g.id).map((s) => (
+              <li><a href={link(`/sluzby/${s.slug}`)}><Icon name={serviceIcon[s.slug]} size={22} />{s.name}</a></li>
+            ))}
+          </ul>
+        </Fragment>
+      ))}
       <ul class="mnav__small mnav__pages">
         <li><a href={link("/sluzby")}>Všechny služby</a></li>
         {links.map((l) => <li><a href={link(l.href)}>{l.label}</a></li>)}
@@ -102,9 +103,6 @@ const logoSvg = inlineSvg(logo, "hdr");
   .hdr__logo { display: block; width: 170px; flex: none; margin-left: -8px; }
   .hdr__logo :global(svg) { width: 100%; height: auto; }
 
-  /* Na úvodní stránce je logem obří nápis v hero, malé logo se ukáže až po odscrollování. */
-  .hdr--home .hdr__logo { opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out); }
-  .hdr--home.is-scrolled .hdr__logo { opacity: 1; pointer-events: auto; transform: none; }
   .hdr--home:not(.is-scrolled) { background: transparent; }
 
   .hdr__nav { margin-left: auto; }
@@ -120,8 +118,8 @@ const logoSvg = inlineSvg(logo, "hdr");
 
   .hdr__has-menu { position: relative; }
   .hdr__menu {
-    position: absolute; top: calc(100% + 10px); left: -20px; width: min(760px, 70vw);
-    display: grid; grid-template-columns: 1.3fr 1fr; gap: 8px;
+    position: absolute; top: calc(100% + 10px); left: -20px; width: min(820px, 72vw);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     background: var(--color-night-2); padding: 12px;
     box-shadow: 0 24px 60px rgb(0 0 0 / 0.45); /* taste-skill-ignore: rozbalovací menu */
     transform-origin: top left;
@@ -130,14 +128,14 @@ const logoSvg = inlineSvg(logo, "hdr");
   .hdr__menu[hidden] { display: none; }
   @keyframes menu-in { from { opacity: 0; transform: translateY(-6px) scale(0.98); } }
   .hdr__menu-col { display: flex; flex-direction: column; gap: 2px; padding: 8px; }
-  .hdr__menu-col:first-child { background: var(--color-night-3); }
+
   .hdr__menu-title { font-size: var(--fs-small); color: var(--color-muted); padding: 6px 12px 10px; }
-  .hdr__menu-item { display: grid; gap: 2px; padding: 12px; text-decoration: none; transition: background-color 150ms var(--ease-out); }
+  .hdr__menu-item { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; padding: 10px 12px; text-decoration: none; transition: background-color 150ms var(--ease-out); }
+  .hdr__menu-icon { display: grid; place-items: center; width: 40px; height: 40px; color: var(--color-hey); background: rgb(254 202 20 / 0.1); transition: background-color 150ms var(--ease-out), color 150ms; }
+  .hdr__menu-text { display: grid; gap: 2px; }
   .hdr__menu-name { font-weight: 700; font-size: var(--fs-body); }
   .hdr__menu-desc { font-size: var(--fs-small); color: var(--color-muted); line-height: 1.45; }
-  .hdr__menu-item--compact { padding: 10px 12px; }
-  .hdr__menu-item--compact .hdr__menu-name { font-weight: 500; }
-  .hdr__menu-all { margin: 10px 12px 4px; font-size: var(--fs-small); }
+  .hdr__menu-all { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; background: var(--color-night-3); font-weight: 700; font-size: var(--fs-small); text-decoration: none; transition: background-color 150ms var(--ease-out); }
 
   .hdr__actions { display: flex; align-items: center; gap: 18px; }
   .hdr__phone { font-weight: 700; text-decoration: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -151,7 +149,9 @@ const logoSvg = inlineSvg(logo, "hdr");
 
   @media (hover: hover) and (pointer: fine) {
     .hdr__link:hover { color: var(--color-hey); }
-    .hdr__menu-item:hover { background: #2c3846; }
+    .hdr__menu-item:hover { background: var(--color-night-3); }
+    .hdr__menu-item:hover .hdr__menu-icon { background: var(--color-hey); color: var(--color-night); }
+    .hdr__menu-all:hover { background: #2c3846; }
     .hdr__phone:hover { color: var(--color-hey); }
   }
 
@@ -165,7 +165,8 @@ const logoSvg = inlineSvg(logo, "hdr");
   @keyframes mnav-in { from { opacity: 0; transform: translateY(-10px); } }
   .mnav__title { color: var(--color-muted); font-size: var(--fs-small); margin: 22px 0 6px; }
   .mnav ul { list-style: none; margin: 0; padding: 0; }
-  .mnav__big a { display: block; padding: 8px 0; font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; text-decoration: none; line-height: 1.15; }
+  .mnav__big a { display: flex; align-items: center; gap: 14px; padding: 9px 0; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; line-height: 1.15; }
+  .mnav__big a :global(svg) { color: var(--color-hey); flex: none; }
   .mnav__small a { display: block; padding: 11px 0; font-size: var(--fs-body); font-weight: 500; text-decoration: none; }
   .mnav__pages { margin-top: 18px; padding-top: 10px; }
   .mnav__contact { display: grid; gap: 18px; margin-top: 28px; justify-items: start; }

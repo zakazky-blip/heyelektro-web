@@ -1,7 +1,7 @@
 ---
 import { link } from "../lib/url";
 import Base from "../layouts/Base.astro";
-import { focusServices } from "../data/services";
+import { services } from "../data/services";
 import { site } from "../data/site";
 import { Image } from "astro:assets";
 import { photos } from "../data/images";
@@ -16,7 +16,7 @@ import { photos } from "../data/images";
       <p class="e404__lead">Tady je zkrat: stránka, kterou hledáte, neexistuje nebo se přestěhovala. Zkuste některou z těchto:</p>
       <ul class="e404__links">
         <li><a href={link("/")} class="link-u">Úvodní stránka</a></li>
-        {focusServices.map((s) => <li><a href={link(`/sluzby/${s.slug}`)} class="link-u">{s.name}</a></li>)}
+        {services.slice(0, 6).map((s) => <li><a href={link(`/sluzby/${s.slug}`)} class="link-u">{s.name}</a></li>)}
         <li><a href={link("/kontakt")} class="link-u">Kontakt</a></li>
       </ul>
       <a href={site.phone.href} class="btn btn-hey" data-track="phone">Zavolat {site.phone.display}</a>

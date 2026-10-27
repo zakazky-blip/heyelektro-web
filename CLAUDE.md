@@ -17,7 +17,8 @@ Firemní web pro elektro firmu ze Zábřehu: kamerové systémy Dahua/Hikvision,
 - `npm run build` – build pro Vercel (výstup `.vercel/output`)
 - Build pro GitHub Pages lokálně (Git Bash): `MSYS_NO_PATHCONV=1 DEPLOY_TARGET=github BASE_PATH=/heyelektro-web npx astro build` → `dist/`
 - `npm run logo` – přegeneruje SVG loga z `scripts/logo-paths.json`
-- `npm run icons` – favicon, ikony, PNG loga, OG obrázek
+- `npm run icons` – favicon, ikony, PNG loga
+- `npm run og` – sdílecí obrázky (OG) pro úvod, služby a lokality (po změně názvů služeb nebo lokalit)
 - `node scripts/nbsp-markdown.mjs` – nezlomitelné mezery v článcích po úpravě
 
 ## Kde je obsah

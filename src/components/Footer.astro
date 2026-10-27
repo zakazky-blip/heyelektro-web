@@ -6,8 +6,7 @@ import { cities } from "../data/locations";
 import { photos } from "../data/images";
 import { cz } from "../lib/typo";
 import { inlineSvg } from "../lib/svg";
-import lettering from "../assets/brand/logo-lettering.svg?raw";
-import wordmark from "../assets/brand/elektro-wordmark.svg?raw";
+import logo from "../assets/brand/logo-stacked-dark.svg?raw";
 
 const year = new Date().getFullYear();
 const credits = Object.values(photos).filter((p, i, a) => a.findIndex((x) => x.url === p.url) === i);
@@ -17,9 +16,9 @@ const credits = Object.values(photos).filter((p, i, a) => a.findIndex((x) => x.u
   <div class="wrap">
     <div class="ftr__top">
       <a href={link("/")} class="ftr__mark" aria-label="Hey! Elektro – úvodní stránka">
-        <Fragment set:html={inlineSvg(lettering, "ftr-l", "ftr__lettering")} />
-        <Fragment set:html={inlineSvg(wordmark, "ftr-w", "ftr__wordmark")} />
+        <Fragment set:html={inlineSvg(logo, "ftr-l", "ftr__logo")} />
       </a>
+      <p class="ftr__claim">{cz("Elektroinstalace, rozvaděče a revize. Kamery, alarmy a datové sítě. Ze Zábřehu pro Olomoucký kraj, východní Čechy, Opavu a Ostravu.")}</p>
       <div class="ftr__contact">
         <a href={site.phone.href} class="ftr__phone" data-track="phone">{site.phone.display}</a>
         <a href={`mailto:${site.email}`} class="ftr__email link-u" data-track="email">{site.email}</a>
@@ -45,6 +44,7 @@ const credits = Object.values(photos).filter((p, i, a) => a.findIndex((x) => x.u
             <li><a href={link("/o-nas")}>O nás</a></li>
             <li><a href={link("/lokality")}>Kde působíme</a></li>
             <li><a href={link("/poradna")}>Poradna</a></li>
+            <li><a href={link("/caste-dotazy")}>Časté dotazy</a></li>
             <li><a href={link("/kontakt")}>Kontakt</a></li>
           </ul>
         </div>
@@ -74,10 +74,10 @@ const credits = Object.values(photos).filter((p, i, a) => a.findIndex((x) => x.u
 
 <style>
   .ftr { background: var(--color-night-0); padding: clamp(72px, 9vw, 140px) 0 calc(36px + env(safe-area-inset-bottom, 0px)); }
-  .ftr__top { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: clamp(24px, 4vw, 64px); align-items: end; }
-  .ftr__mark { display: grid; gap: clamp(16px, 2vw, 28px); text-decoration: none; }
-  .ftr__mark :global(.ftr__lettering) { width: 100%; height: auto; }
-  .ftr__mark :global(.ftr__wordmark) { width: 52%; height: auto; color: var(--color-ink); margin-left: 3%; }
+  .ftr__top { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: clamp(28px, 5vw, 88px); align-items: center; }
+  .ftr__mark { display: block; width: clamp(150px, 15vw, 220px); text-decoration: none; }
+  .ftr__mark :global(.ftr__logo) { display: block; width: 100%; height: auto; }
+  .ftr__claim { font-size: var(--fs-lead); line-height: 1.45; color: var(--color-muted); max-width: 34ch; }
   .ftr__contact { display: grid; gap: 14px; justify-items: start; padding-bottom: 6px; }
   .ftr__phone { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -0.03em; text-decoration: none; color: var(--color-hey); font-variant-numeric: tabular-nums; line-height: 1; }
   .ftr__email { font-size: var(--fs-lead); font-weight: 500; }
@@ -106,9 +106,15 @@ const credits = Object.values(photos).filter((p, i, a) => a.findIndex((x) => x.u
   }
 
   @media (max-width: 900px) {
-    .ftr__top, .ftr__mid { grid-template-columns: 1fr; }
+    .ftr__top { grid-template-columns: auto minmax(0, 1fr); }
+    .ftr__contact { grid-column: 1 / -1; }
+    .ftr__mid { grid-template-columns: 1fr; }
     .ftr__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .ftr__cols > div:last-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 600px) {
+    .ftr__top { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+    .ftr__contact { justify-items: center; }
   }
   @media (max-width: 767px) {
     .ftr { padding-bottom: calc(108px + env(safe-area-inset-bottom, 0px)); }

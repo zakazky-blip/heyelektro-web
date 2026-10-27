@@ -13,7 +13,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "logo": "node scripts/build-logo.mjs public/brand",
-    "icons": "node scripts/build-icons.mjs"
+    "icons": "node scripts/build-icons.mjs",
+    "og": "node scripts/build-og.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",

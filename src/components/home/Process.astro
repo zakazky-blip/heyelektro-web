@@ -1,74 +1,90 @@
 ---
-// Postup: tři fotky různých formátů po klesající diagonále, text v mezerách.
+// Postup ve třech krocích. Kroky spojuje linka, kterou při najetí do sekce „proteče proud“.
 import { Image } from "astro:assets";
 import { photos } from "../../data/images";
 import { cz } from "../../lib/typo";
 
-const stages = [
-  {
-    runin: "Nejdřív obhlídka a návrh.",
-    text: "Přijedeme, projdeme objekt a zeptáme se, co chcete hlídat nebo zapojit. Navrhneme řešení a pošleme nabídku s rozpisem materiálu, práce i dopravy.",
-    photo: photos.mereni,
-  },
-  {
-    runin: "Potom montáž.",
-    text: "V domluvený termín natáhneme kabely, zapojíme a nastavíme. Kde to jde, pracujeme bez sekání, a po sobě uklidíme.",
-    photo: photos.elektrikarHelma,
-  },
-  {
-    runin: "Nakonec předání.",
-    text: "Nastavíme vám aplikaci, ukážeme ovládání a předáme dokumentaci i revizní zprávu. Když budete chtít systém rozšířit nebo poradit, zavoláte nám.",
-    photo: photos.dumNoc,
-  },
+const steps = [
+  { title: "Obhlídka a návrh", text: "Přijedeme, projdeme objekt a zeptáme se, co chcete hlídat nebo zapojit. Pošleme nabídku s rozpisem materiálu, práce i dopravy.", photo: photos.mereni },
+  { title: "Montáž", text: "V domluvený termín natáhneme kabely, zapojíme a nastavíme. Kde to jde, pracujeme bez sekání, a po sobě uklidíme.", photo: photos.elektrikarHelma },
+  { title: "Předání a servis", text: "Ukážeme ovládání, nastavíme aplikaci a předáme dokumentaci i revizní zprávu. Rozšíření nebo servis? Zavoláte nám.", photo: photos.kameryTri },
 ];
 ---
 
-<section class="proc" aria-labelledby="proc-title">
-  <div class="wrap proc__grid">
-    <h2 id="proc-title" class="proc__title rv">Jak to probíhá</h2>
-    {stages.map((s, i) => (
-      <Fragment>
-        <div class={`proc__photo proc__photo--${i + 1} rv`}>
-          <Image src={s.photo.src} alt={s.photo.alt} widths={[420, 720, 1100]} sizes={i === 2 ? "(max-width: 1023px) 80vw, 40vw" : "(max-width: 1023px) 100vw, 30vw"} loading="lazy" />
-        </div>
-        <p class={`proc__text proc__text--${i + 1} rv`} style="--i:1"><strong>{cz(s.runin)}</strong> {cz(s.text)}</p>
-      </Fragment>
-    ))}
+<section class="proc" aria-labelledby="proc-title" data-proc>
+  <div class="wrap">
+    <div class="proc__head">
+      <h2 id="proc-title" class="t-h2 rv">Jak to probíhá</h2>
+      <p class="proc__lead rv" style="--i:1">{cz("Tři kroky od prvního telefonátu po hotové dílo. U každého víte, co bude následovat.")}</p>
+    </div>
+    <div class="proc__track" aria-hidden="true"><span class="proc__current"></span></div>
+    <ol class="proc__steps">
+      {steps.map((s, i) => (
+        <li class="proc__step rv" style={`--i:${i}`}>
+          <span class="proc__num" aria-hidden="true">{i + 1}</span>
+          <div class="proc__photo">
+            <Image src={s.photo.src} alt={s.photo.alt} widths={[400, 640, 900]} sizes="(max-width: 1023px) 100vw, 32vw" loading="lazy" />
+          </div>
+          <h3 class="proc__title">{s.title}</h3>
+          <p class="proc__text">{cz(s.text)}</p>
+        </li>
+      ))}
+    </ol>
   </div>
 </section>
 
 <style>
   .proc { padding-block: var(--section); }
-  .proc__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(16px, 2vw, 32px); align-items: start; }
-  .proc__title { grid-column: 7 / span 6; grid-row: 1; font-weight: 400; font-size: var(--fs-display); letter-spacing: -0.04em; line-height: 1; }
+  .proc .wrap { position: relative; }
+  .proc__head { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 24px clamp(24px, 4vw, 72px); align-items: end; }
+  .proc__lead { color: var(--color-muted); max-width: 44ch; }
 
-  .proc__photo { overflow: hidden; background: var(--color-night-2); }
+  .proc__track { position: relative; height: 2px; margin: clamp(40px, 5vw, 64px) 0 0; background: var(--color-night-3); }
+  .proc__current { position: absolute; inset: 0; background: var(--color-hey); transform: scaleX(0); transform-origin: left; transition: transform 1600ms var(--ease-in-out); }
+  .proc__current::after {
+    content: ""; position: absolute; right: -6px; top: 50%; width: 12px; height: 12px; margin-top: -6px; border-radius: 50%;
+    background: #fff3c2; outline: 4px solid rgb(254 202 20 / 0.35);
+    opacity: 0; transition: opacity 300ms ease 1300ms;
+  }
+  .proc.is-on .proc__current { transform: scaleX(1); }
+  .proc.is-on .proc__current::after { opacity: 1; }
+
+  .proc__steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 2.5vw, 40px); }
+  .proc__step { position: relative; padding-top: 34px; }
+  .proc__num {
+    position: absolute; top: -21px; left: 0; display: grid; place-items: center; width: 42px; height: 42px;
+    border-radius: 50%; background: var(--color-night); color: var(--color-ink); font-weight: 700;
+    border: 2px solid var(--color-night-3);
+    transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease;
+  }
+  .proc.is-on .proc__num { background: var(--color-hey); color: var(--color-night); border-color: var(--color-hey); }
+  .proc.is-on .proc__step:nth-child(2) .proc__num { transition-delay: 600ms; }
+  .proc.is-on .proc__step:nth-child(3) .proc__num { transition-delay: 1200ms; }
+  .proc__photo { aspect-ratio: 16 / 11; overflow: hidden; background: var(--color-night-2); }
   .proc__photo :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease-out); }
-  .proc__text { max-width: 36ch; }
-  .proc__text strong { font-weight: 700; color: var(--color-hey); }
-
-  .proc__photo--1 { grid-column: 1 / span 4; grid-row: 1 / span 2; aspect-ratio: 3 / 4; }
-  .proc__text--1 { grid-column: 5 / span 3; grid-row: 2; padding-top: 24px; }
-  .proc__photo--2 { grid-column: 6 / span 3; grid-row: 3; aspect-ratio: 1; margin-top: -80px; }
-  .proc__text--2 { grid-column: 9 / span 4; grid-row: 3; margin-top: -80px; }
-  .proc__photo--3 { grid-column: 8 / span 5; grid-row: 4; aspect-ratio: 16 / 10; margin-top: 64px; }
-  .proc__text--3 { grid-column: 3 / span 4; grid-row: 4; margin-top: 64px; justify-self: end; }
-
+  .proc__title { margin-top: 22px; font-size: var(--fs-h3); letter-spacing: -0.03em; }
+  .proc__text { margin-top: 10px; color: var(--color-muted); max-width: 42ch; }
   @media (hover: hover) and (pointer: fine) {
-    .proc__photo:hover :global(img) { transform: scale(1.03); }
+    .proc__step:hover .proc__photo :global(img) { transform: scale(1.04); }
   }
-
+  @media (prefers-reduced-motion: reduce) {
+    .proc__current { transform: scaleX(1); transition: none; }
+  }
   @media (max-width: 1023px) {
-    .proc__grid { display: flex; flex-direction: column; }
-    .proc__title { margin-bottom: 36px; }
-    .proc__photo, .proc__text { margin: 0 !important; padding: 0 !important; }
-    .proc__text { margin-top: 18px !important; margin-bottom: 52px !important; }
-    .proc__photo--1 { width: 100%; aspect-ratio: 4 / 3; }
-    .proc__photo--2, .proc__text--2 { width: 62%; align-self: flex-end; }
-    .proc__photo--3, .proc__text--3 { width: 78%; align-self: flex-start; }
-    .proc__text--3 { margin-bottom: 0 !important; }
-  }
-  @media (max-width: 560px) {
-    .proc__text--2, .proc__text--3 { width: 100%; }
+    .proc__head { grid-template-columns: 1fr; }
+    .proc__track { display: none; }
+    .proc__steps { grid-template-columns: 1fr; gap: 48px; margin-top: 40px; }
+    .proc__step { padding-top: 0; padding-left: 60px; }
+    .proc__num { top: 0; }
+    .proc__step::before { content: ""; position: absolute; left: 20px; top: 50px; bottom: -40px; width: 2px; background: var(--color-night-3); }
+    .proc__step:last-child::before { display: none; }
   }
 </style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-proc]").forEach((root) => {
+    new IntersectionObserver(([e], io) => {
+      if (e.isIntersecting) { root.classList.add("is-on"); io.disconnect(); }
+    }, { threshold: 0.35 }).observe(root);
+  });
+</script>

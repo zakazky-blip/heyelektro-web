@@ -24,7 +24,7 @@ const { title = "Chcete to probrat rovnou? Zavolejte, poradíme po telefonu." } 
 
 <style>
   .pcta { background: var(--color-hey); color: var(--color-night); }
-  .pcta__inner { min-height: min(86svh, 820px); display: grid; grid-template-rows: auto 1fr auto; padding-block: clamp(40px, 6vw, 72px); }
+  .pcta__inner { min-height: min(68svh, 640px); display: grid; grid-template-rows: auto 1fr auto; padding-block: clamp(40px, 6vw, 72px); }
   .pcta__title { font-size: var(--fs-lead); font-weight: 500; letter-spacing: -0.01em; line-height: 1.35; max-width: 26ch; }
   .pcta__phone {
     align-self: end; justify-self: start;
@@ -40,7 +40,7 @@ const { title = "Chcete to probrat rovnou? Zavolejte, poradíme po telefonu." } 
     .pcta__phone:hover { color: #3a2f00; }
   }
   @media (max-width: 767px) {
-    .pcta__inner { min-height: 70svh; }
+    .pcta__inner { min-height: 56svh; }
     .pcta__phone { font-size: 17.5vw; }
     .pcta__right { text-align: left; }
   }

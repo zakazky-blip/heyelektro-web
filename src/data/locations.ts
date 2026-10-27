@@ -68,16 +68,17 @@ export const locations: Location[] = [
     minutes: 0,
     lat: 49.75,
     lng: 17.15,
-    seoTitle: "Kamery, alarmy Jablotron a elektro v Olomouckém kraji | Hey! Elektro",
+    seoTitle: "Elektrikář, kamery a alarmy v Olomouckém kraji | Hey! Elektro",
     description:
       "Kamerové systémy Dahua a Hikvision, zabezpečení Jablotron, rozvaděče a elektroinstalace v celém Olomouckém kraji. Sídlo v Zábřehu, Šumperk 15 km, Olomouc 49 km.",
-    h1: "Kamery a alarmy v Olomouckém kraji",
+    h1: "Elektro, kamery a alarmy v Olomouckém kraji",
     lead: "Sídlíme v Zábřehu, takže celý Olomoucký kraj máme po ruce: Šumperk a Mohelnici za čtvrt hodiny, Olomouc za necelou hodinu, Jeseník přes Červenohorské sedlo.",
     intro: [
       "Olomoucký kraj je náš domovský region. Ze Zábřehu vede silnice I/44 na sever do Šumperka a Jeseníku a na jih k dálnici D35, po které jsme rychle v Olomouci, Prostějově i Přerově.",
-      "Montujeme kamerové systémy, alarmy Jablotron a rozvaděče pro rodinné domy, firmy i chaty v Jeseníkách. Děláme také elektroinstalace, revize, wallboxy, datové sítě a videotelefony.",
+      "Děláme elektroinstalace, rozvaděče a revize, montujeme kamerové systémy a alarmy Jablotron. Pro rodinné domy, firmy i chaty v Jeseníkách, k tomu wallboxy, datové sítě a videotelefony.",
     ],
     emphasis: [
+      { service: "elektroinstalace", text: "Nové rozvody i rekonstrukce v domech, bytech a provozovnách po celém kraji." },
       { service: "kamerove-systemy", text: "Kamery Dahua a Hikvision pro domy, firmy a areály od Jeseníku po Přerov." },
       { service: "zabezpeceni-jablotron", text: "Bezdrátové alarmy Jablotron pro byty v Olomouci i chalupy v Jeseníkách." },
       { service: "rozvadece", text: "Výměny starých rozvaděčů v domech a bytech po celém kraji." },
@@ -105,16 +106,17 @@ export const locations: Location[] = [
     minutes: 0,
     lat: 49.8826,
     lng: 16.8722,
-    seoTitle: "Elektrikář Zábřeh, kamery a alarmy Jablotron | Hey! Elektro",
+    seoTitle: "Elektrikář Zábřeh: elektroinstalace, kamery a alarmy | Hey! Elektro",
     description:
       "Elektrikář přímo v Zábřehu. Kamerové systémy Dahua a Hikvision, alarmy Jablotron, rozvaděče, elektroinstalace a revize. Sídlo Křížkovského 865/4.",
-    h1: "Elektrikář a kamery v Zábřehu",
+    h1: "Elektrikář, kamery a alarmy v Zábřehu",
     lead: "V Zábřehu máme sídlo, na Křížkovského ulici. K vám domů nebo do firmy to máme pár minut.",
     intro: [
       "Zábřeh je naše domovské město, proto tu vezmeme i práci, kvůli které by vzdálenější firma nevyjela: výměnu jističe, nové zásuvky nebo rychlou opravu poruchy.",
-      "Hlavně ale montujeme kamerové systémy, alarmy Jablotron a rozvaděče. Pracujeme v rodinných domech na okraji města, v bytech, ve firmách i v okolních obcích od Postřelmova po Štíty.",
+      "Děláme nové elektroinstalace a rekonstrukce, rozvaděče a revize, montujeme kamerové systémy a alarmy Jablotron. Pracujeme v rodinných domech na okraji města, v bytech, ve firmách i v okolních obcích od Postřelmova po Štíty.",
     ],
     emphasis: [
+      { service: "elektroinstalace", text: "Nové rozvody, rekonstrukce, přidání zásuvek i opravy poruch. V Zábřehu jsme za pár minut." },
       { service: "kamerove-systemy", text: "Kamery pro domy a firmy v Zábřehu, s obrazem v mobilu." },
       { service: "zabezpeceni-jablotron", text: "Alarmy Jablotron do bytů i domů, bezdrátově a bez sekání." },
       { service: "rozvadece", text: "Výměna starých pojistkových skříní za rozvaděč s chrániči." },
@@ -142,16 +144,17 @@ export const locations: Location[] = [
     minutes: 20,
     lat: 49.9653,
     lng: 16.9706,
-    seoTitle: "Kamery, alarmy Jablotron a elektrikář Šumperk | Hey! Elektro",
+    seoTitle: "Elektrikář Šumperk: elektro, kamery a alarmy Jablotron | Hey! Elektro",
     description:
       "Kamerové systémy, alarmy Jablotron, rozvaděče a elektroinstalace v Šumperku a okolí. Ze Zábřehu jsme u vás za 20 minut. Chalupy v Jeseníkách s LTE připojením.",
-    h1: "Kamery, alarmy a elektro v Šumperku",
+    h1: "Elektrikář, kamery a alarmy v Šumperku",
     lead: "Do Šumperka to máme ze Zábřehu 15 km po I/44. Jezdíme sem i do údolí Desné a na chalupy v Jeseníkách.",
     intro: [
       "Šumperk je pro nás skoro domácí půda. Montujeme tu kamery a alarmy do rodinných domů, bytů a firem a měníme staré rozvaděče v domech, které mají ještě pojistky.",
       "Za Šumperkem začínají Jeseníky a s nimi chalupy a penziony ve Velkých Losinách, Loučné nad Desnou nebo Kouty. Tam často chybí pevný internet, a tak dáváme alarmy a kamery s připojením přes mobilní síť. Majitel pak vidí, co se na chalupě děje, i když je stovky kilometrů daleko.",
     ],
     emphasis: [
+      { service: "elektroinstalace", text: "Elektroinstalace při rekonstrukcích domů a bytů v Šumperku i na chalupách v okolí." },
       { service: "zabezpeceni-jablotron", text: "Alarmy Jablotron s LTE pro chalupy a penziony v údolí Desné." },
       { service: "kamerove-systemy", text: "Kamery pro domy a firmy v Šumperku a kamery s LTE na horách." },
       { service: "rozvadece", text: "Výměny rozvaděčů ve starší zástavbě a rodinných domech." },
@@ -175,16 +178,17 @@ export const locations: Location[] = [
     minutes: 45,
     lat: 49.5938,
     lng: 17.2509,
-    seoTitle: "Kamerové systémy, alarmy Jablotron a elektrikář Olomouc | Hey! Elektro",
+    seoTitle: "Elektrikář Olomouc: elektro, kamery a alarmy Jablotron | Hey! Elektro",
     description:
       "Montáž kamer Dahua a Hikvision, alarmů Jablotron a rozvaděčů v Olomouci a okolí. Bezdrátové zabezpečení bytů bez sekání, videotelefony pro SVJ, firmy.",
-    h1: "Kamery, alarmy a elektro v Olomouci",
+    h1: "Elektrikář, kamery a alarmy v Olomouci",
     lead: "Do Olomouce jezdíme ze Zábřehu po D35, zhruba 45 minut. Zabezpečujeme byty, rodinné domy, bytové domy i firemní areály.",
     intro: [
       "V Olomouci hodně pracujeme v bytech. Bezdrátový alarm Jablotron se do bytu namontuje bez sekání a bez prachu, takže se hodí i do čerstvě vymalovaného interiéru nebo do pronájmu.",
       "Pro bytové domy a SVJ měníme zvonková tabla za videotelefony se vstupem na čip a montujeme kamery do vchodů, garáží a kolárn. Ve firmách a skladech kolem města stavíme kamerové systémy s chytrou detekcí osob a vozidel a upravujeme rozvaděče pro nové stroje.",
     ],
     emphasis: [
+      { service: "elektroinstalace", text: "Rekonstrukce elektroinstalace v bytech a domech, rozvody pro kanceláře a provozovny." },
       { service: "zabezpeceni-jablotron", text: "Bezdrátové alarmy Jablotron do bytů, bez sekání a malování." },
       { service: "kamerove-systemy", text: "Kamery pro firmy, sklady a bytové domy v Olomouci a okolí." },
       { service: "videotelefony-a-pristupove-systemy", text: "Zvonková tabla s videem a vstup na čip pro SVJ." },
@@ -212,16 +216,17 @@ export const locations: Location[] = [
     minutes: 55,
     lat: 49.4719,
     lng: 17.1118,
-    seoTitle: "Kamery, alarmy Jablotron a elektrikář Prostějov | Hey! Elektro",
+    seoTitle: "Elektrikář Prostějov: elektro, kamery a alarmy | Hey! Elektro",
     description:
       "Kamerové systémy Dahua a Hikvision, alarmy Jablotron, rozvaděče a elektroinstalace v Prostějově a na Hané. Ze Zábřehu necelá hodina jízdy.",
-    h1: "Kamery a alarmy v Prostějově",
+    h1: "Elektrikář, kamery a alarmy v Prostějově",
     lead: "Do Prostějova to máme ze Zábřehu 63 km, necelou hodinu jízdy. Pracujeme ve městě i v obcích na Hané a směrem na Plumlov.",
     intro: [
       "Na Prostějovsku stojí hodně rodinných domů s dvorem, garáží a dílnou. Pro ně navrhujeme kamery, které hlídají vjezd a dvůr, a alarm, který pokryje dům i hospodářské budovy.",
       "Ve starších domech často narážíme na rozvaděč s pojistkami a bez proudového chrániče. Výměnu spojíme s revizí, takže na konci dostanete bezpečný rozvaděč i revizní zprávu.",
     ],
     emphasis: [
+      { service: "elektroinstalace", text: "Nové rozvody a rekonstrukce v rodinných domech, bytech i firmách." },
       { service: "kamerove-systemy", text: "Kamery na vjezd, dvůr a hospodářské budovy rodinných domů." },
       { service: "rozvadece", text: "Výměna starých rozvaděčů s pojistkami, včetně revize." },
       { service: "zabezpeceni-jablotron", text: "Alarm Jablotron pro dům, garáž i dílnu v jednom systému." },
@@ -245,16 +250,17 @@ export const locations: Location[] = [
     minutes: 65,
     lat: 49.4551,
     lng: 17.4509,
-    seoTitle: "Kamery, alarmy Jablotron a elektrikář Přerov | Hey! Elektro",
+    seoTitle: "Elektrikář Přerov: elektro, kamery a alarmy Jablotron | Hey! Elektro",
     description:
       "Montáž kamerových systémů, alarmů Jablotron a rozvaděčů v Přerově a okolí. Kamery pro firmy a areály, zabezpečení domů, elektroinstalace a revize.",
-    h1: "Kamery, alarmy a elektro v Přerově",
+    h1: "Elektrikář, kamery a alarmy v Přerově",
     lead: "Do Přerova jezdíme ze Zábřehu přes Olomouc, zhruba hodinu. Zabezpečujeme domy, firmy a areály v Přerově, Lipníku i Kojetíně.",
     intro: [
       "Přerovsko je kraj firem, skladů a dílen. Pro ně stavíme kamerové systémy s chytrou detekcí, které v noci upozorní na člověka nebo auto v areálu, ale nespustí se kvůli dešti nebo zvířeti.",
       "Pro rodinné domy montujeme alarmy Jablotron a kamery s aplikací v mobilu. Při větších zakázkách plánujeme montáž tak, abychom ji zvládli v co nejméně výjezdech.",
     ],
     emphasis: [
+      { service: "elektroinstalace", text: "Elektroinstalace pro domy, byty a provozovny, od nových rozvodů po revizi." },
       { service: "kamerove-systemy", text: "Kamery s detekcí osob a vozidel pro firemní areály a sklady." },
       { service: "zabezpeceni-jablotron", text: "Alarmy Jablotron pro rodinné domy s ovládáním z mobilu." },
       { service: "rozvadece", text: "Rozvaděče pro dílny a provozovny, nové vývody pro stroje." },
@@ -278,16 +284,17 @@ export const locations: Location[] = [
     minutes: 80,
     lat: 50.2294,
     lng: 17.2046,
-    seoTitle: "Kamery a alarmy Jablotron pro chaty a penziony, Jeseník | Hey! Elektro",
+    seoTitle: "Elektrikář Jeseník, kamery a alarmy pro chaty a penziony | Hey! Elektro",
     description:
       "Zabezpečení chat, penzionů a domů na Jesenicku. Alarmy Jablotron a kamery s připojením přes mobilní síť, rozvaděče a elektroinstalace. Jezdíme přes Červenohorské sedlo.",
-    h1: "Kamery a alarmy pro Jesenicko",
+    h1: "Elektro, kamery a alarmy pro Jesenicko",
     lead: "Do Jeseníku jezdíme ze Zábřehu přes Šumperk a Červenohorské sedlo. Zabezpečujeme chalupy, penziony i domy ve městě.",
     intro: [
       "Na Jesenicku je hodně objektů, kde majitel není každý den: chalupy, apartmány, penziony. Alarm Jablotron s komunikací přes mobilní síť a kamery s LTE připojením vám ukážou, co se děje, i když jste doma ve městě.",
       "V zimě hlídá alarm i teplotu a únik vody. Když vypadne topení nebo praskne potrubí, dozvíte se to hned, ne až při příští návštěvě.",
     ],
     emphasis: [
+      { service: "elektroinstalace", text: "Rozvody pro chalupy a penziony, rekonstrukce elektroinstalace ve starších domech." },
       { service: "zabezpeceni-jablotron", text: "Alarmy pro chaty a penziony s hlídáním teploty a vody." },
       { service: "kamerove-systemy", text: "Kamery s LTE připojením tam, kde není pevný internet." },
       { service: "videotelefony-a-pristupove-systemy", text: "Vstup pro hosty penzionu kódem, bez předávání klíčů." },
@@ -316,16 +323,17 @@ export const locations: Location[] = [
     minutes: 0,
     lat: 50.0,
     lng: 16.1,
-    seoTitle: "Kamery, alarmy Jablotron a rozvaděče ve východních Čechách | Hey! Elektro",
+    seoTitle: "Elektrikář, kamery a alarmy ve východních Čechách | Hey! Elektro",
     description:
       "Kamerové systémy, alarmy Jablotron, rozvaděče a elektroinstalace v Pardubickém a Královéhradeckém kraji: Svitavy, Ústí nad Orlicí, Pardubice, Hradec Králové.",
-    h1: "Kamery a alarmy ve východních Čechách",
+    h1: "Elektro, kamery a alarmy ve východních Čechách",
     lead: "Ze Zábřehu je to do Lanškrouna 26 km a do Ústí nad Orlicí 45 km. Pravidelně jezdíme na Svitavsko, Orlickoústecko, Pardubicko i Hradecko.",
     intro: [
       "Zábřeh leží kousek od hranice s Pardubickým krajem. Lanškroun, Moravská Třebová nebo Česká Třebová jsou blíž než Olomouc, a tak je pro nás Svitavsko a Orlickoústecko stejně domácí jako Haná.",
       "Do Pardubic a Hradce Králové jezdíme na větší zakázky: kamerové systémy pro firmy, rozvaděče, alarmy pro rodinné domy. Montáž plánujeme tak, abychom ji zvládli v co nejméně výjezdech.",
     ],
     emphasis: [
+      { service: "elektroinstalace", text: "Elektroinstalace pro novostavby i rekonstrukce na Svitavsku a Orlickoústecku." },
       { service: "kamerove-systemy", text: "Kamery Dahua a Hikvision pro domy a firmy od Svitav po Hradec." },
       { service: "zabezpeceni-jablotron", text: "Alarmy Jablotron s ovládáním z mobilu, bezdrátově a čistě." },
       { service: "rozvadece", text: "Rozvaděče pro novostavby, FVE a wallboxy i výměny starých." },
@@ -353,16 +361,17 @@ export const locations: Location[] = [
     minutes: 55,
     lat: 49.7559,
     lng: 16.4683,
-    seoTitle: "Kamery, alarmy Jablotron a elektrikář Svitavy | Hey! Elektro",
+    seoTitle: "Elektrikář Svitavy: elektro, kamery a alarmy Jablotron | Hey! Elektro",
     description:
       "Kamerové systémy Dahua a Hikvision, alarmy Jablotron, rozvaděče a elektroinstalace ve Svitavách, Moravské Třebové, Poličce a Litomyšli.",
-    h1: "Kamery a alarmy ve Svitavách",
+    h1: "Elektrikář, kamery a alarmy ve Svitavách",
     lead: "Ze Zábřehu do Svitav je to 52 km. Moravskou Třebovou máme cestou, Poličku a Litomyšl kousek za ní.",
     intro: [
       "Na Svitavsku montujeme kamerové systémy a alarmy do rodinných domů i do firem a dílen. Mnoho domů tu má velký pozemek, takže kamery navrhujeme tak, aby pokryly vjezd, dvůr i zahradu bez slepých míst.",
       "Častou zakázkou je i rozvaděč pro nový velký spotřebič: tepelné čerpadlo, fotovoltaiku nebo wallbox. Rozvaděč upravíme, doplníme přepěťovou ochranu a zajistíme revizi.",
     ],
     emphasis: [
+      { service: "elektroinstalace", text: "Nové rozvody a rekonstrukce v domech a firmách ve Svitavách i v Moravské Třebové." },
       { service: "kamerove-systemy", text: "Kamery pro velké pozemky bez slepých míst, s detekcí osob." },
       { service: "rozvadece", text: "Úpravy rozvaděčů pro tepelná čerpadla, FVE a wallboxy." },
       { service: "zabezpeceni-jablotron", text: "Alarmy Jablotron pro domy i firemní provozovny." },
@@ -386,16 +395,17 @@ export const locations: Location[] = [
     minutes: 55,
     lat: 49.9739,
     lng: 16.3936,
-    seoTitle: "Kamery, alarmy Jablotron a elektrikář Ústí nad Orlicí | Hey! Elektro",
+    seoTitle: "Elektrikář Ústí nad Orlicí: elektro, kamery a alarmy | Hey! Elektro",
     description:
       "Montáž kamer, alarmů Jablotron a rozvaděčů v Ústí nad Orlicí, České Třebové, Lanškrouně a Letohradu. Ze Zábřehu 45 km.",
-    h1: "Kamery a alarmy v Ústí nad Orlicí",
+    h1: "Elektrikář, kamery a alarmy v Ústí nad Orlicí",
     lead: "Orlickoústecko máme ze Zábřehu blízko: Lanškroun 26 km, Česká Třebová 42 km, Ústí nad Orlicí 45 km.",
     intro: [
       "Do Lanškrouna, České Třebové a Ústí nad Orlicí to máme blíž než do Olomouce. Proto sem jezdíme pravidelně, na obhlídky, montáže i servis.",
       "Montujeme kamery a alarmy pro rodinné domy a firmy, měníme rozvaděče a připravujeme domy na fotovoltaiku a wallbox. Pro chalupy v Orlických horách nabízíme alarmy a kamery s připojením přes mobilní síť.",
     ],
     emphasis: [
+      { service: "elektroinstalace", text: "Elektroinstalace pro domy a provozovny na Orlickoústecku, nové rozvody i rekonstrukce." },
       { service: "kamerove-systemy", text: "Kamery pro domy a firmy v Ústí, Lanškrouně a České Třebové." },
       { service: "zabezpeceni-jablotron", text: "Alarmy Jablotron s LTE pro chalupy v Orlických horách." },
       { service: "wallboxy", text: "Wallboxy a rozvaděče pro domy s fotovoltaikou." },
@@ -419,10 +429,10 @@ export const locations: Location[] = [
     minutes: 115,
     lat: 50.0343,
     lng: 15.7812,
-    seoTitle: "Kamerové systémy, alarmy Jablotron a rozvaděče Pardubice | Hey! Elektro",
+    seoTitle: "Kamery, alarmy Jablotron a rozvaděče Pardubice | Hey! Elektro",
     description:
       "Kamerové systémy Dahua a Hikvision, alarmy Jablotron a rozvaděče v Pardubicích a Chrudimi. Firemní areály, rodinné domy, výměny rozvaděčů.",
-    h1: "Kamery a alarmy v Pardubicích",
+    h1: "Kamery, alarmy a rozvaděče v Pardubicích",
     lead: "Do Pardubic jezdíme ze Zábřehu na obhlídky a montáže kamer, alarmů a rozvaděčů. Je to 110 km, necelé dvě hodiny jízdy.",
     intro: [
       "V Pardubicích a okolí děláme hlavně kamerové systémy pro firmy a rodinné domy, alarmy Jablotron a rozvaděče. Na menší opravy je pro vás výhodnější místní elektrikář. Na kameru, alarm nebo nový rozvaděč se k vám rádi rozjedeme.",
@@ -452,10 +462,10 @@ export const locations: Location[] = [
     minutes: 120,
     lat: 50.2092,
     lng: 15.8328,
-    seoTitle: "Kamerové systémy, alarmy Jablotron a rozvaděče Hradec Králové | Hey! Elektro",
+    seoTitle: "Kamery, alarmy a rozvaděče Hradec Králové | Hey! Elektro",
     description:
       "Kamerové systémy Dahua a Hikvision, alarmy Jablotron a rozvaděče v Hradci Králové a okolí. Pro firmy i rodinné domy, montáž plánovaná v celých dnech.",
-    h1: "Kamery a alarmy v Hradci Králové",
+    h1: "Kamery, alarmy a rozvaděče v Hradci Králové",
     lead: "Do Hradce Králové jezdíme ze Zábřehu na zakázky kamer, alarmů a rozvaděčů. Je to 125 km, zhruba dvě hodiny.",
     intro: [
       "V Hradci Králové a okolí stavíme kamerové systémy pro firmy a rodinné domy, montujeme alarmy Jablotron a zapojujeme rozvaděče, hlavně pro novostavby, fotovoltaiku a wallboxy.",
@@ -486,10 +496,10 @@ export const locations: Location[] = [
     minutes: 115,
     lat: 49.9387,
     lng: 17.9026,
-    seoTitle: "Kamerové systémy, alarmy Jablotron a rozvaděče Opava | Hey! Elektro",
+    seoTitle: "Kamery, alarmy Jablotron a rozvaděče Opava | Hey! Elektro",
     description:
       "Kamery Dahua a Hikvision, alarmy Jablotron a rozvaděče v Opavě a okolí. Zabezpečení rodinných domů, firem a provozoven, montáž plánovaná v celých dnech.",
-    h1: "Kamery a alarmy v Opavě",
+    h1: "Kamery, alarmy a rozvaděče v Opavě",
     lead: "Na Opavsko jezdíme ze Zábřehu na zakázky kamer, alarmů a rozvaděčů. Necelé dvě hodiny jízdy.",
     intro: [
       "V Opavě a okolních obcích zabezpečujeme rodinné domy a firmy: kamerový systém s obrazem v mobilu, alarm Jablotron, případně obojí v jednom návrhu. Na kamery Dahua i Hikvision máme certifikaci.",

@@ -33,7 +33,7 @@ const faq = [
   ...l.faq,
   {
     q: `Které služby ${l.locative} děláte?`,
-    a: "Hlavně kamerové systémy Dahua a Hikvision, zabezpečení Jablotron a rozvaděče. Dále elektroinstalace, revize a hromosvody, wallboxy, datové sítě a videotelefony.",
+    a: "Elektroinstalace, rozvaděče, revize a hromosvody a wallboxy. Ze zabezpečení kamerové systémy Dahua a Hikvision, alarmy Jablotron, videotelefony a datové sítě.",
   },
   {
     q: "Kolik bude montáž stát?",
@@ -46,7 +46,7 @@ const others = services.filter((s) => !l.emphasis.some((e) => e.service === s.sl
 const mapCity = isCity && l.km > 0 ? l.name : undefined;
 ---
 
-<Base title={l.seoTitle} description={l.description} schema={[locationSchema(l), breadcrumbSchema(crumbs), faqSchema(faq)]}>
+<Base title={l.seoTitle} description={l.description} ogImage={`/og/lokalita-${l.slug}.jpg`} schema={[locationSchema(l), breadcrumbSchema(crumbs), faqSchema(faq)]}>
   <PageHero crumbs={crumbs} title={l.h1} lead={l.lead} ctaHref="#poptavka">
     <Fragment slot="aside">
       <div class="lmap">
@@ -75,7 +75,7 @@ const mapCity = isCity && l.km > 0 ? l.name : undefined;
       <div class="lint__img rv" style="--i:1"><Image src={photos.dumNoc.src} alt={photos.dumNoc.alt} widths={[480, 800, 1100]} sizes="(max-width: 1023px) 100vw, 45vw" loading="lazy" /></div>
     </div>
     <div class="wrap lint__cards">
-      <ServiceCards items={emphasis.map((e) => ({ slug: e.s.slug, title: `${e.s.name} ${l.locative}`, text: e.text }))} />
+      <ServiceCards items={emphasis.map((e) => ({ slug: e.s.slug, title: `${e.s.name} ${l.locative}`, text: e.text }))} cols={emphasis.length === 4 ? 4 : 3} />
     </div>
   </section>
 

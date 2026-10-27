@@ -12,6 +12,8 @@ Web nic z níže uvedeného nevymýšlí. Položky jsou buď schované (dokud ne
 
 ## Obsah
 - [ ] **Vlastní fotky** z realizací, týmu a auta – nahradí ilustrační fotky z Unsplash (`src/data/images.ts`, `src/assets/foto`).
+- [ ] **Krátké video** ze zakázky (10–20 s, bez zvuku, na šířku) – smyčka do sekce „Proč Hey! Elektro“ na úvodní stránce. Volně licencované video elektrikáře v potřebné kvalitě jsme nenašli.
+- [ ] Potvrdit **vodorovnou verzi loga** v hlavičce (značka vlevo, ELEKTRO vpravo). Pokud ji brand manuál nemá, nahradíme ji samotnou značkou; patička, O nás a sdílecí obrázky už používají oficiální verzi s ELEKTRO na střed.
 - [ ] **Tým**: jména a fotky lidí na stránku O nás (E-E-A-T i důvěra).
 - [ ] **Reference / realizace** se souhlasem zákazníků → nová stránka Realizace.
 - [ ] **Google recenze** – sbírat od prvních zakázek.

@@ -1,5 +1,6 @@
 // Klientský skript pro celý web: hlavička, menu, odhalování sekcí, cookies a měření.
 import "./tracking/phone-click.js";
+import "./spark";
 
 type Consent = { v: 1; analytics: boolean; marketing: boolean; ts: string };
 declare global {

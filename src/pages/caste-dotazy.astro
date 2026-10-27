@@ -1,0 +1,58 @@
+---
+// Všechny časté dotazy na jednom místě: obecné a pak podle služeb ve dvou skupinách.
+import { link } from "../lib/url";
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import Faq from "../components/Faq.astro";
+import FormSection from "../components/FormSection.astro";
+import PhoneCta from "../components/PhoneCta.astro";
+import { generalFaq } from "../data/faq";
+import { serviceGroups, servicesIn } from "../data/services";
+import { photos } from "../data/images";
+import { breadcrumbSchema, faqSchema } from "../lib/schema";
+
+const crumbs = [
+  { name: "Úvod", path: "/" },
+  { name: "Časté dotazy", path: "/caste-dotazy" },
+];
+const groups = serviceGroups.map((g) => ({ ...g, items: servicesIn(g.id).filter((s) => s.faq.length > 0) }));
+const all = [...generalFaq, ...groups.flatMap((g) => g.items.flatMap((s) => s.faq))];
+---
+
+<Base
+  title="Časté dotazy: elektro, rozvaděče, kamery a alarmy | Hey! Elektro"
+  description="Odpovědi na časté dotazy k elektroinstalacím, rozvaděčům, revizím, wallboxům, kamerám Dahua a Hikvision, alarmům Jablotron a datovým sítím. Hey! Elektro, Zábřeh."
+  schema={[breadcrumbSchema(crumbs), faqSchema(all)]}
+>
+  <PageHero
+    crumbs={crumbs}
+    title="Časté dotazy"
+    lead="Co se nás lidé ptají nejčastěji, od ceny a dojezdu po revize, kamery a alarmy. Nenašli jste odpověď? Zavolejte, poradíme."
+    photo={photos.mereni}
+  />
+
+  <nav class="fqnav" aria-label="Témata dotazů">
+    <div class="wrap fqnav__inner">
+      <a href="#obecne" class="fqnav__a">Obecné</a>
+      {groups.flatMap((g) => g.items).map((s) => <a href={`#${s.slug}`} class="fqnav__a">{s.name}</a>)}
+    </div>
+  </nav>
+
+  <Faq faq={generalFaq} title="Obecné dotazy" id="obecne" tight />
+  {groups.map((g) => g.items.map((s) => (
+    <Faq faq={s.faq} title={s.name} id={s.slug} tight more={{ href: link(`/sluzby/${s.slug}`), label: "Více o službě" }} />
+  )))}
+
+  <FormSection />
+  <PhoneCta />
+</Base>
+
+<style>
+  .fqnav { padding-top: clamp(32px, 4vw, 56px); }
+  .fqnav__inner { display: flex; flex-wrap: wrap; gap: 8px; }
+  .fqnav__a { flex: none; padding: 10px 16px; background: var(--color-night-2); text-decoration: none; font-weight: 500; font-size: var(--fs-small); white-space: nowrap; transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out); }
+  .fqnav__a:active { background: var(--color-hey); color: var(--color-night); }
+  @media (hover: hover) and (pointer: fine) {
+    .fqnav__a:hover { background: var(--color-night-3); }
+  }
+</style>

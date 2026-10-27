@@ -1,21 +1,27 @@
 ---
-// Široký nadpis, otázky odsazené od 5. sloupce. <details>, žádné linky mezi řádky.
+// Dva sloupce: vlevo lepivý nadpis s telefonem, vpravo otázky jako <details>.
 import type { Faq } from "../data/services";
 import { cz } from "../lib/typo";
 import { site } from "../data/site";
+import Icon from "./Icon.astro";
 
-interface Props { faq: Faq[]; title?: string; id?: string; paper?: boolean }
-const { faq, title = "Na co se nás ptáte", id = "faq", paper = false } = Astro.props;
+// more: odkaz místo telefonu (stránka Časté dotazy, kde se skupiny opakují); tight: menší odsazení sekce
+interface Props { faq: Faq[]; title?: string; id?: string; paper?: boolean; more?: { href: string; label: string }; tight?: boolean }
+const { faq, title = "Na co se nás ptáte", id = "faq", paper = false, more, tight = false } = Astro.props;
 ---
 
-<section class:list={["faq", { "faq--paper": paper }]} aria-labelledby={`${id}-title`}>
-  <div class="wrap">
+<section class:list={["faq", { "faq--paper": paper, "faq--tight": tight }]} id={tight ? id : undefined} aria-labelledby={`${id}-title`}>
+  <div class="wrap faq__grid">
     <div class="faq__head">
       <h2 id={`${id}-title`} class="faq__h rv">{cz(title)}</h2>
-      <div class="faq__aside rv" style="--i:1">
-        <p class="muted">Nenašli jste odpověď?</p>
-        <a href={site.phone.href} data-track="phone">{site.phone.display}</a>
-      </div>
+      {more ? (
+        <a href={more.href} class="faq__more link-u rv" style="--i:1">{more.label} <Icon name="arrow" size={18} /></a>
+      ) : (
+        <div class="faq__aside rv" style="--i:1">
+          <p class="muted">Nenašli jste odpověď?</p>
+          <a href={site.phone.href} data-track="phone">{site.phone.display}</a>
+        </div>
+      )}
     </div>
     <div class="faq__list">
       {faq.map((f, i) => (
@@ -33,14 +39,17 @@ const { faq, title = "Na co se nás ptáte", id = "faq", paper = false } = Astro
 
 <style>
   .faq { padding-block: var(--section); }
+  .faq--tight { padding-block: clamp(40px, 5vw, 72px); scroll-margin-top: 80px; }
+  .faq--tight .faq__h { font-size: var(--fs-h2); max-width: 14ch; }
+  .faq__more { display: inline-flex; align-items: center; gap: 8px; width: fit-content; font-weight: 500; }
   .faq--paper { background: var(--color-paper); color: var(--color-paper-ink); }
-  .faq__h { font-size: var(--fs-display); letter-spacing: -0.045em; line-height: 1; max-width: 14ch; }
-  .faq__head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(16px, 2vw, 32px); align-items: end; }
-  .faq__head .faq__h { grid-column: 1 / span 8; }
-  .faq__aside { grid-column: 9 / span 4; display: grid; gap: 4px; justify-items: start; }
+  .faq__grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 40px clamp(32px, 6vw, 112px); align-items: start; }
+  .faq__head { position: sticky; top: 112px; display: grid; gap: clamp(24px, 3vw, 40px); }
+  .faq__h { font-size: var(--fs-display); letter-spacing: -0.045em; line-height: 1; max-width: 10ch; }
+  .faq__aside { display: grid; gap: 4px; justify-items: start; padding-left: 18px; border-left: 3px solid var(--color-hey); }
   .faq__aside a { font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; text-decoration: none; color: var(--color-hey); font-variant-numeric: tabular-nums; }
   .faq--paper .faq__aside a { color: var(--color-night); }
-  .faq__list { margin-top: 80px; margin-left: calc((100% + clamp(16px, 2vw, 32px)) / 12 * 4); display: grid; gap: 12px; }
+  .faq__list { display: grid; gap: 8px; }
   .faq__item { padding: 12px 24px; margin-inline: -24px; transition: background-color 220ms var(--ease-out); }
   .faq__item[open] { background: var(--color-night-2); }
   .faq--paper .faq__item[open] { background: #fff; }
@@ -55,12 +64,10 @@ const { faq, title = "Na co se nás ptáte", id = "faq", paper = false } = Astro
     .faq__item:not([open]):hover { background: color-mix(in srgb, var(--color-night-2) 60%, transparent); }
     .faq--paper .faq__item:not([open]):hover { background: #ebe8e1; }
   }
-  @media (max-width: 640px) {
-    .faq__head { grid-template-columns: 1fr; row-gap: 20px; }
-    .faq__head .faq__h, .faq__aside { grid-column: 1; }
-  }
   @media (max-width: 900px) {
-    .faq__list { margin: 48px 0 0; gap: 6px; }
+    .faq__grid { grid-template-columns: 1fr; }
+    .faq__head { position: static; }
+    .faq__list { gap: 6px; }
     .faq__item { margin-inline: calc(-1 * var(--gutter)); padding: 8px var(--gutter); }
   }
 </style>

@@ -48,7 +48,7 @@ export type PhotoKey = keyof typeof photos;
 // Obrázek ke každé službě (klíč Service.image)
 export const serviceImage: Record<string, PhotoKey> = {
   kamera: "kamera",
-  alarm: "alarm",
+  alarm: "dumNoc",
   rozvadec: "rozvadec",
   elektroinstalace: "elektrikar",
   revize: "kleste",
@@ -60,7 +60,7 @@ export const serviceImage: Record<string, PhotoKey> = {
 // Druhá fotka na stránce služby (sekce s podrobnostmi)
 export const serviceImage2: Record<string, PhotoKey> = {
   kamera: "kameryTri",
-  alarm: "dumNoc",
+  alarm: "alarm",
   rozvadec: "rozvadecKabely",
   elektroinstalace: "elektrikarHelma",
   revize: "blesk",

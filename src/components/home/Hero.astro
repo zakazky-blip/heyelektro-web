@@ -1,118 +1,233 @@
 ---
+// Hero úvodní stránky: oficiální logo (stacked, ELEKTRO na střed) s animací „zapnutí proudu“,
+// kolem něj dráhy plošného spoje s pulzy proudu. Vlevo nadpis, akce a rozcestník služeb.
 import { link } from "../../lib/url";
-import { Picture } from "astro:assets";
-import { photos } from "../../data/images";
 import { site } from "../../data/site";
 import { cz } from "../../lib/typo";
 import { inlineSvg } from "../../lib/svg";
-import lettering from "../../assets/brand/logo-lettering.svg?raw";
+import logoHero from "../../assets/brand/logo-hero.svg?raw";
+import Icon from "../Icon.astro";
 
-const p = photos.hero;
+const quick = [
+  { href: "/sluzby/elektroinstalace", label: "Elektro­instalace", icon: "socket" },
+  { href: "/sluzby/rozvadece", label: "Rozvaděče", icon: "panel" },
+  { href: "/sluzby/kamerove-systemy", label: "Kamerové systémy", icon: "camera" },
+  { href: "/sluzby/zabezpeceni-jablotron", label: "Alarmy Jablotron", icon: "shield" },
+] as const;
+
+// Dráhy plošného spoje (souřadnice vůči středu loga, 1 jednotka = 1 px při šířce loga 440 px)
+const traces = [
+  "M 720 -300 H 260 L 165 -205",
+  "M 720 -12 H 212",
+  "M 720 290 H 285 L 185 190",
+  "M 70 -470 V -335 L 4 -269 V -216",
+  "M -70 470 V 335 L -24 289 V 232",
+  "M -330 -470 V -392 L -228 -290 H -170 L -136 -256",
+  "M -350 470 V 405 L -250 305 H -176",
+  "M 720 -150 H 368 L 318 -100 H 224",
+  "M 720 150 H 400 L 350 110 H 214",
+];
+// Koncové body vypočítané z cesty (poslední absolutní souřadnice nebo H/V hodnota)
+const nodes = traces.map((d) => {
+  let x = 0, y = 0;
+  for (const m of d.matchAll(/([MLHV])\s*(-?\d+(?:\.\d+)?)(?:\s+(-?\d+(?:\.\d+)?))?/g)) {
+    const [, c, a, b] = m;
+    if (c === "M" || c === "L") { x = +a; y = +(b ?? 0); }
+    if (c === "H") x = +a;
+    if (c === "V") y = +a;
+  }
+  return [x, y];
+});
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <div class="hero__photo">
-    <Picture
-      src={p.src}
-      alt={p.alt}
-      formats={["avif", "webp"]}
-      widths={[480, 720, 960, 1280, 1600]}
-      sizes="(max-width: 1023px) 100vw, 47vw"
-      loading="eager"
-      fetchpriority="high"
-      class="hero__img"
-    />
-  </div>
+  <div class="wrap hero__grid">
+    <div class="hero__copy">
+      <p class="hero__kicker"><Icon name="pin" size={18} /><span>{cz("Elektrikáři ze Zábřehu · Olomoucký kraj, východní Čechy, Opava, Ostrava")}</span></p>
+      <h1 id="hero-title" class="hero__title"><span class="sr-only">Hey! Elektro: </span>{cz("Elektroinstalace a zabezpečení")}</h1>
+      <p class="hero__lead">{cz("Elektroinstalace, rozvaděče a revize. Kamery Dahua a Hikvision, alarmy Jablotron a datové sítě. Silnoproud i slaboproud od jednoho týmu, s nabídkou předem.")}</p>
+      <div class="hero__actions">
+        <a href={link("/kontakt#poptavka")} class="btn btn-hey" data-track="cta" data-cta="hero">Nezávazná poptávka</a>
+        <a href={site.phone.href} class="btn btn-ghost" data-track="phone">
+          <Icon name="phone" size={18} />
+          {site.phone.display}
+        </a>
+      </div>
+      <p class="hero__trust">
+        <Icon name="bolt" size={18} />
+        <span>{cz("Certifikovaný partner Jablotron, Dahua a Hikvision")}</span>
+      </p>
+    </div>
 
-  <div class="hero__copy">
-    <h1 id="hero-title" class="hero__title"><span class="sr-only">Hey! Elektro: </span>{cz("Kamery, alarmy Jablotron a rozvaděče")}</h1>
-    <p class="hero__lead">{cz("Certifikovaní technici ze Zábřehu. Kamery Dahua a Hikvision, zabezpečení Jablotron a rozvaděče pro Olomoucký kraj, východní Čechy, Opavu a Ostravu.")}</p>
-    <div class="hero__actions">
-      <a href={link("/kontakt#poptavka")} class="btn btn-hey" data-track="cta" data-cta="hero">Nezávazná poptávka</a>
-      <a href={site.phone.href} class="btn btn-ghost" data-track="phone">Zavolat {site.phone.display}</a>
+    <div class="hero__brand">
+      <svg class="hero__traces" viewBox="-720 -470 1440 940" aria-hidden="true" focusable="false">
+        <g class="hero__traces-base">{traces.map((d) => <path d={d} />)}</g>
+        <g class="hero__traces-pulse">{traces.map((d, i) => <path d={d} pathLength="1" style={`--d:${(i * 0.37) % 2.4}s;--t:${2.6 + (i % 3) * 0.6}s`} />)}</g>
+        <g class="hero__nodes">{nodes.map(([x, y], i) => <circle cx={x} cy={y} r="4.5" style={`--d:${(i * 0.37) % 2.4}s;--t:${2.6 + (i % 3) * 0.6}s`} />)}</g>
+      </svg>
+      <div class="hero__flash" aria-hidden="true"></div>
+      <div class="hero__logo">
+        <Fragment set:html={inlineSvg(logoHero, "hero")} />
+      </div>
     </div>
   </div>
 
-  <div class="hero__name">
-    <Fragment set:html={inlineSvg(lettering, "hero-l", "hero__lettering")} />
-  </div>
+  <nav class="wrap hero__quick" aria-label="Hlavní služby">
+    <ul>
+      {quick.map((q, i) => (
+        <li style={`--i:${i}`}>
+          <a href={link(q.href)}>
+            <span class="hero__qicon"><Icon name={q.icon} size={26} /></span>
+            <span class="hero__qlabel">{q.label}</span>
+            <Icon name="arrow" size={18} class="hero__qarrow" />
+          </a>
+        </li>
+      ))}
+      <li style="--i:4" class="hero__qall"><a href={link("/sluzby")}><span class="hero__qlabel">{cz("Revize, wallboxy, sítě a další služby")}</span><Icon name="arrow" size={18} class="hero__qarrow" /></a></li>
+    </ul>
+  </nav>
 </section>
 
 <style>
   .hero {
     position: relative;
-    min-height: max(620px, 100svh);
     margin-top: calc(-76px - env(safe-area-inset-top, 0px));
-    display: grid;
-    grid-template-columns: 47vw minmax(0, 1fr);
-    grid-template-rows: 1fr auto;
+    padding-top: calc(76px + env(safe-area-inset-top, 0px));
+    min-height: min(100svh, 980px);
+    display: grid; grid-template-rows: 1fr auto;
     overflow: clip;
+    isolation: isolate;
   }
-  .hero__photo {
-    grid-column: 1; grid-row: 1 / span 2;
-    position: relative;
-    margin: 20px 0 20px 20px;
-    background: var(--color-night-2);
-    overflow: hidden;
+  /* Jemná mřížka plošného spoje v pozadí */
+  .hero::before {
+    content: ""; position: absolute; inset: 0; z-index: -2;
+    background-image: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.06) 1px, transparent 0); /* taste-skill-ignore: tečkovaný vzor, ne barevný přechod */
+    background-size: 28px 28px;
+    mask-image: linear-gradient(90deg, transparent 0%, #000 45%, #000 100%); /* taste-skill-ignore: maska, vzor pod textem mizí */
   }
-  .hero__photo :global(picture) { position: absolute; inset: 0; }
-  .hero__photo :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; }
+  .hero__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: clamp(24px, 4vw, 64px); padding-block: clamp(32px, 6svh, 72px); }
 
-  .hero__copy {
-    grid-column: 2; grid-row: 1;
-    align-self: start;
-    width: min(100%, 40rem);
-    padding: clamp(104px, 14svh, 150px) var(--gutter) 32px clamp(28px, 5vw, 88px);
-    position: relative; z-index: 2;
-  }
-  .hero__title { font-size: var(--fs-h2); line-height: 1.04; letter-spacing: -0.035em; }
-  .hero__lead { margin-top: 24px; font-size: var(--fs-lead); line-height: 1.42; max-width: 38ch; }
-  .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .hero__kicker { display: flex; align-items: center; gap: 10px; margin-bottom: clamp(18px, 2.2vw, 28px); font-size: var(--fs-small); font-weight: 500; color: var(--color-muted); }
+  .hero__kicker :global(svg) { flex: none; color: var(--color-hey); }
+  .hero__title { font-size: clamp(2.1rem, 1rem + 3.6vw, 4.1rem); line-height: 1; letter-spacing: -0.045em; max-width: 12ch; }
+  .hero__lead { margin-top: clamp(20px, 2.4vw, 28px); font-size: var(--fs-lead); line-height: 1.45; max-width: 44ch; color: var(--color-muted); }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(28px, 3vw, 40px); }
+  .hero__actions .btn { min-height: 56px; }
+  .hero__trust { display: flex; align-items: center; gap: 10px; margin-top: 28px; font-size: var(--fs-small); color: var(--color-muted); }
+  .hero__trust :global(svg) { color: var(--color-hey); flex: none; }
 
-  .hero__name {
-    grid-column: 2; grid-row: 2;
-    position: relative; z-index: 3;
-    margin: 0 var(--gutter) 40px -10vw;
-    display: flex; justify-content: flex-end;
-    pointer-events: none;
-    transform-origin: 60% 100%;
+  .hero__brand { position: relative; display: grid; place-items: center; }
+  /* Tlumená záře za logem, aby značka nestála na plochém pozadí */
+  .hero__brand::before {
+    content: ""; position: absolute; z-index: 0; width: min(78%, 360px); aspect-ratio: 1; border-radius: 50%;
+    background: var(--color-hey); opacity: 0.09; filter: blur(70px); pointer-events: none;
   }
-  .hero__name :global(.hero__lettering) {
-    width: clamp(32vw, (100svh - 530px) * 1.826, 100%);
-    height: auto;
+  .hero__logo { position: relative; width: min(100%, 440px); z-index: 2; }
+  .hero__logo :global(svg) { width: 100%; height: auto; overflow: visible; }
+
+  .hero__traces {
+    position: absolute; z-index: 1; left: 50%; top: 50%;
+    width: calc(min(100%, 440px) * 3.27); height: auto;
+    transform: translate(-50%, -48.5%);
+    overflow: visible; pointer-events: none;
+  }
+  .hero__traces-base path { fill: none; stroke: rgb(254 202 20 / 0.16); stroke-width: 1.6; }
+  .hero__traces-pulse path {
+    fill: none; stroke: var(--color-hey); stroke-width: 2.4; stroke-linecap: round;
+    stroke-dasharray: 0.07 1.2; stroke-dashoffset: 0.07; opacity: 0;
+  }
+  .hero__nodes circle { fill: var(--color-night); stroke: rgb(254 202 20 / 0.55); stroke-width: 2; }
+
+  .hero__flash {
+    position: absolute; z-index: 0; width: 70%; aspect-ratio: 1; border-radius: 50%;
+    background: var(--color-hey); filter: blur(60px);
+    opacity: 0; visibility: hidden; pointer-events: none;
   }
 
-  @supports (animation-timeline: scroll()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .hero__name { animation: hero-name linear both; animation-timeline: scroll(root); animation-range: 0 90svh; }
-      @keyframes hero-name { to { transform: scale(0.93) translateY(-3%); } }
-      .hero__photo :global(img) { animation: hero-photo linear both; animation-timeline: scroll(root); animation-range: 0 100svh; }
-      @keyframes hero-photo { from { transform: scale(1.06); } to { transform: scale(1); } }
-    }
+  .hero__quick { position: relative; z-index: 2; padding-bottom: clamp(20px, 3svh, 40px); }
+  .hero__quick ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, 1.25fr); gap: 8px; }
+  .hero__quick a {
+    position: relative; display: flex; align-items: center; gap: 14px; height: 100%; min-height: 76px; padding: 14px 18px;
+    background: rgb(24 32 42 / 0.86); text-decoration: none; font-weight: 700; overflow: hidden;
+    transition: background-color 200ms var(--ease-out), transform 160ms var(--ease-out);
+  }
+  .hero__quick a::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--color-hey);
+    transform: scaleX(0); transform-origin: left; transition: transform 320ms var(--ease-out);
+  }
+  .hero__quick a:active { transform: scale(0.98); }
+  .hero__qicon { display: grid; place-items: center; width: 44px; height: 44px; flex: none; color: var(--color-hey); background: rgb(254 202 20 / 0.1); }
+  .hero__qlabel { flex: 1; line-height: 1.2; }
+  .hero__quick :global(.hero__qarrow) { flex: none; color: var(--color-muted); transition: transform 220ms var(--ease-out), color 200ms; }
+  .hero__qall a { background: transparent; border: 2px solid var(--color-night-3); font-weight: 500; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hero__quick a:hover { background: var(--color-night-3); }
+    .hero__quick a:hover::after { transform: scaleX(1); }
+    .hero__quick a:hover :global(.hero__qarrow) { transform: translateX(4px); color: var(--color-hey); }
   }
 
+  /* ——— Animace „zapnutí proudu“ (jen když uživatel nechce omezit pohyb) ——— */
   @media (prefers-reduced-motion: no-preference) {
-    .hero__copy > * { animation: hero-in 900ms var(--ease-out) both; }
-    .hero__lead { animation-delay: 90ms !important; }
-    .hero__actions { animation-delay: 180ms !important; }
-    .hero__name :global(.hero__lettering) { animation: hero-letters 1100ms var(--ease-out) 120ms both; }
-    @keyframes hero-in { from { opacity: 0; transform: translateY(24px); } }
-    @keyframes hero-letters { from { opacity: 0; transform: translateY(6%) skewX(-4deg); } }
-  }
+    .hero__logo :global(.lg-ring) { stroke-dasharray: 1; stroke-dashoffset: 1; animation: lg-draw 1100ms var(--ease-out) 150ms forwards; }
+    .hero__logo :global(.lg-swoosh) { transform-box: view-box; transform-origin: 0 0; opacity: 0; animation: lg-swoosh 900ms var(--ease-out) 450ms forwards; }
+    .hero__logo :global(.lg-h) { opacity: 0; transform-box: fill-box; transform-origin: center; animation: lg-strike 520ms steps(1, end) 760ms forwards, lg-flicker 9s linear 4s infinite; }
+    .hero__logo :global(.lg-ey) { opacity: 0; animation: lg-slide 560ms var(--ease-out) 980ms forwards; }
+    .hero__logo :global(.lg-ex) { opacity: 0; transform-box: fill-box; transform-origin: center bottom; animation: lg-drop 520ms cubic-bezier(0.34, 1.56, 0.64, 1) 1120ms forwards; }
+    .hero__logo :global(.lg-word) { clip-path: inset(0 100% 0 0); animation: lg-wipe 720ms var(--ease-out) 1250ms forwards; }
+    .hero__logo :global(.lg-orbit) { stroke-dasharray: 0.035 0.965; stroke-dashoffset: 0; opacity: 0; animation: lg-orbit 5.5s linear 2.2s infinite, lg-fade-in 400ms ease 2.2s forwards; }
+    .hero__flash { animation: hero-flash 900ms var(--ease-out) 760ms; }
+    .hero__traces-pulse path { animation: trace-pulse var(--t) var(--ease-in-out) calc(1.4s + var(--d)) infinite; }
+    .hero__nodes circle { animation: node-blink var(--t) linear calc(1.4s + var(--d)) infinite; }
+    .hero__traces-base path { animation: base-in 1200ms ease 200ms both; }
 
-  @media (max-width: 1023px) {
-    .hero { margin-top: 0; grid-template-columns: 1fr; grid-template-rows: auto; min-height: 0; padding-bottom: 8px; }
-    .hero__photo { grid-row: 1; margin: 0 12px; height: 32svh; min-height: 220px; }
-    .hero__name { grid-column: 1; grid-row: 2; margin: min(-9vw, -40px) 12px 0 auto; width: min(86vw, 560px); justify-content: flex-end; }
-    .hero__name :global(.hero__lettering) { width: 100%; }
-    .hero__copy { grid-column: 1; grid-row: 3; padding: 20px var(--gutter) 0; width: 100%; }
-    
-    .hero__lead { margin-top: 14px; }
-    .hero__actions { margin-top: 22px; }
+    .hero__copy > * { animation: hero-in 900ms var(--ease-out) both; }
+    .hero__title { animation-delay: 60ms !important; }
+    .hero__lead { animation-delay: 130ms !important; }
+    .hero__actions { animation-delay: 200ms !important; }
+    .hero__trust { animation-delay: 260ms !important; }
+    .hero__quick li { animation: hero-in 700ms var(--ease-out) both; animation-delay: calc(500ms + var(--i) * 70ms); }
   }
-  @media (max-width: 767px) {
-    .hero__photo { height: 32svh; }
+  @keyframes lg-draw { to { stroke-dashoffset: 0; } }
+  @keyframes lg-swoosh { from { opacity: 0; transform: rotate(-38deg) scale(0.96); } to { opacity: 1; transform: none; } }
+  @keyframes lg-strike { 0% { opacity: 1; } 18% { opacity: 0.15; } 32% { opacity: 1; } 46% { opacity: 0.35; } 60%, 100% { opacity: 1; } }
+  @keyframes lg-flicker { 0%, 93% { opacity: 1; } 94% { opacity: 0.35; } 95% { opacity: 1; } 96.5% { opacity: 0.55; } 97.5%, 100% { opacity: 1; } }
+  @keyframes lg-slide { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+  @keyframes lg-drop { from { opacity: 0; transform: translateY(-26px) scale(0.9); } to { opacity: 1; transform: none; } }
+  @keyframes lg-wipe { to { clip-path: inset(0 0 0 0); } }
+  @keyframes lg-orbit { to { stroke-dashoffset: -1; } }
+  @keyframes lg-fade-in { to { opacity: 1; } }
+  @keyframes hero-flash { 0% { opacity: 0; visibility: visible; transform: scale(0.5); } 22% { opacity: 0.32; } 100% { opacity: 0; visibility: visible; transform: scale(1.15); } }
+  @keyframes trace-pulse { 0% { stroke-dashoffset: 0.07; opacity: 0; } 8% { opacity: 1; } 72% { opacity: 1; } 80%, 100% { stroke-dashoffset: -1; opacity: 0; } }
+  @keyframes node-blink { 0%, 70% { stroke: rgb(254 202 20 / 0.55); fill: var(--color-night); } 76% { stroke: #fff3c2; fill: var(--color-hey); } 92%, 100% { stroke: rgb(254 202 20 / 0.55); fill: var(--color-night); } }
+  @keyframes base-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes hero-in { from { opacity: 0; transform: translateY(22px); } }
+
+  /* Pět dlaždic v řadě se vejde až od 1360 px, pod tím 3 + 2, aby se názvy nelámaly ani neořezávaly */
+  @media (min-width: 1024px) and (max-width: 1359px) {
+    .hero__quick ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .hero__qall { grid-column: span 2; }
+  }
+  @media (max-width: 1149px) {
+    .hero { margin-top: 0; padding-top: 0; }
+  }
+  @media (max-width: 1023px) {
+    .hero { min-height: 0; }
+    .hero__grid { grid-template-columns: 1fr; padding-top: 12px; gap: 8px; }
+    .hero__brand { order: -1; padding-block: 8px 4px; }
+    .hero__logo { width: min(50vw, 300px); }
+    .hero__traces { width: calc(min(50vw, 300px) * 3.27); }
+    .hero__title { max-width: 16ch; }
+    .hero__quick ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hero__qall { grid-column: 1 / -1; }
+  }
+  @media (max-width: 560px) {
+    .hero__quick li:not(.hero__qall) a { flex-direction: column; align-items: flex-start; justify-content: space-between; min-height: 104px; padding: 14px; gap: 12px; font-size: 0.95rem; }
+    .hero__qall a { min-height: 60px; padding: 12px 14px; font-size: 0.95rem; }
+    .hero__qicon { width: 38px; height: 38px; }
+    .hero__quick :global(.hero__qarrow) { display: none; }
     .hero__actions .btn { flex: 1 1 100%; }
-    .hero__actions .btn-ghost { display: none; }
+    .hero__lead { font-size: 1.04rem; }
+    .hero__trust { margin-top: 20px; }
   }
 </style>

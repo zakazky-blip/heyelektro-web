@@ -1,13 +1,14 @@
 // Obsah stránek služeb. Texty jsou psané pro web, cz() při renderu doplní nezlomitelné mezery.
-// focus: true = služby, na které chce firma směrovat (kamery, zabezpečení, rozvaděče).
+// group: „elektro“ (silnoproud) nebo „zabezpeceni“ (kamery, alarmy, vstupy, sítě). Obě skupiny mají na webu stejnou váhu.
 
 export type Faq = { q: string; a: string };
+export type ServiceGroup = "elektro" | "zabezpeceni";
 
 export type Service = {
   slug: string;
   name: string; // krátký název do navigace
   short: string; // jedna věta do přehledů
-  focus: boolean;
+  group: ServiceGroup;
   seoTitle: string;
   description: string;
   h1: string;
@@ -23,13 +24,13 @@ export type Service = {
   keywords: string[]; // podklad pro SEO a Google Ads, na stránce se nezobrazuje
 };
 
-export const services: Service[] = [
+const rawServices: Service[] = [
   {
     slug: "kamerove-systemy",
     name: "Kamerové systémy",
     short: "Kamery Dahua a Hikvision s nočním viděním, záznamem a přístupem z mobilu.",
-    focus: true,
-    seoTitle: "Kamerové systémy Dahua a Hikvision, montáž | Hey! Elektro",
+    group: "zabezpeceni",
+    seoTitle: "Montáž kamer Dahua a Hikvision, Zábřeh a Olomouc | Hey! Elektro",
     description:
       "Montáž kamerových systémů Dahua a Hikvision pro rodinné domy, firmy a chaty. Návrh rozmístění, noční vidění, záznam a sledování z mobilu. Olomoucký kraj a východní Čechy.",
     h1: "Kamerové systémy Dahua a Hikvision",
@@ -120,8 +121,8 @@ export const services: Service[] = [
     slug: "zabezpeceni-jablotron",
     name: "Zabezpečení Jablotron",
     short: "Alarmy Jablotron 100+ ovládané z mobilu. Bezdrátově, bez sekání do zdí.",
-    focus: true,
-    seoTitle: "Alarm Jablotron, montáž zabezpečení domu a firmy | Hey! Elektro",
+    group: "zabezpeceni",
+    seoTitle: "Alarm Jablotron, zabezpečení domu a firmy, Zábřeh | Hey! Elektro",
     description:
       "Certifikovaný montážní partner Jablotron. Navrhneme a namontujeme alarm JABLOTRON 100+ pro byt, dům, firmu i chatu. Bezdrátové prvky bez sekání, ovládání z mobilu.",
     h1: "Zabezpečení Jablotron",
@@ -212,8 +213,8 @@ export const services: Service[] = [
     slug: "rozvadece",
     name: "Rozvaděče",
     short: "Výměna starých pojistkových skříní, rozvaděče pro novostavby, FVE a wallboxy.",
-    focus: true,
-    seoTitle: "Rozvaděče, výměna a zapojení domovních rozvaděčů | Hey! Elektro",
+    group: "elektro",
+    seoTitle: "Výměna a zapojení rozvaděčů, Zábřeh a Olomouc | Hey! Elektro",
     description:
       "Výměna starého rozvaděče za jističe a proudové chrániče, rozvaděče pro novostavby, fotovoltaiku, wallbox a firmy. Přehledné zapojení, popis obvodů a revize.",
     h1: "Elektrické rozvaděče",
@@ -302,8 +303,8 @@ export const services: Service[] = [
     slug: "elektroinstalace",
     name: "Elektroinstalace",
     short: "Novostavby, rekonstrukce bytů a domů, firemní prostory. Včetně revize.",
-    focus: false,
-    seoTitle: "Elektroinstalace rodinných domů, bytů a firem | Hey! Elektro",
+    group: "elektro",
+    seoTitle: "Elektroinstalace a elektrikář Zábřeh, Olomouc | Hey! Elektro",
     description:
       "Kompletní elektroinstalace pro novostavby, rekonstrukce bytů a domů i firemní prostory. Návrh rozvodů, montáž, příprava pro kamery, alarm a síť, revize.",
     h1: "Elektroinstalace",
@@ -387,8 +388,8 @@ export const services: Service[] = [
     slug: "revize-a-hromosvody",
     name: "Revize a hromosvody",
     short: "Výchozí a pravidelné revize s revizní zprávou. Návrh, montáž a revize hromosvodů.",
-    focus: false,
-    seoTitle: "Revize elektroinstalace a hromosvodů | Hey! Elektro",
+    group: "elektro",
+    seoTitle: "Revize elektroinstalace a hromosvodů, Zábřeh | Hey! Elektro",
     description:
       "Výchozí a pravidelné revize elektroinstalací a hromosvodů s revizní zprávou pro kolaudaci, prodej nemovitosti i pojišťovnu. Montáž a výměna hromosvodů.",
     h1: "Revize a hromosvody",
@@ -472,8 +473,8 @@ export const services: Service[] = [
     slug: "wallboxy",
     name: "Wallboxy",
     short: "Nabíjení elektroauta doma i ve firmě. Posouzení jističe, montáž, řízení výkonu.",
-    focus: false,
-    seoTitle: "Montáž wallboxu, nabíjení elektroauta doma i ve firmě | Hey! Elektro",
+    group: "elektro",
+    seoTitle: "Montáž wallboxu pro elektroauto, Zábřeh a Olomouc | Hey! Elektro",
     description:
       "Montáž wallboxů pro rodinné domy a firmy. Posoudíme hlavní jistič, doporučíme výkon, zapojíme jištění a chránič a nastavíme nabíjení z fotovoltaiky.",
     h1: "Wallboxy pro elektroauta",
@@ -552,8 +553,8 @@ export const services: Service[] = [
     slug: "datove-site-a-wifi",
     name: "Datové sítě a Wi-Fi",
     short: "Kabeláž, datový rozvaděč a Wi-Fi, která pokryje celý dům, zahradu i kancelář.",
-    focus: false,
-    seoTitle: "Datové sítě a Wi-Fi pro domy a firmy | Hey! Elektro",
+    group: "zabezpeceni",
+    seoTitle: "Datové sítě a Wi-Fi pro domy a firmy, Zábřeh | Hey! Elektro",
     description:
       "Strukturovaná kabeláž, datový rozvaděč, PoE switch a Wi-Fi přístupové body pro rodinné domy a firmy. Síť navržená i pro kamery a alarm.",
     h1: "Datové sítě a Wi-Fi",
@@ -632,8 +633,8 @@ export const services: Service[] = [
     slug: "videotelefony-a-pristupove-systemy",
     name: "Videotelefony a vstupy",
     short: "Videotelefony s aplikací, čtečky karet, kódové klávesnice a elektrické zámky.",
-    focus: false,
-    seoTitle: "Videotelefony a přístupové systémy, montáž | Hey! Elektro",
+    group: "zabezpeceni",
+    seoTitle: "Videotelefony a přístupové systémy, Zábřeh | Hey! Elektro",
     description:
       "Montáž videotelefonů s aplikací v mobilu, přístupových systémů, čteček karet a elektrických zámků pro rodinné domy, bytové domy a firmy.",
     h1: "Videotelefony a přístupové systémy",
@@ -712,6 +713,22 @@ export const services: Service[] = [
   },
 ];
 
-export const focusServices = services.filter((s) => s.focus);
-export const otherServices = services.filter((s) => !s.focus);
+// Pořadí na webu: elektro a zabezpečení střídavě rovnocenně
+const ORDER = [
+  "elektroinstalace",
+  "rozvadece",
+  "revize-a-hromosvody",
+  "wallboxy",
+  "kamerove-systemy",
+  "zabezpeceni-jablotron",
+  "videotelefony-a-pristupove-systemy",
+  "datove-site-a-wifi",
+];
+export const services: Service[] = ORDER.map((slug) => rawServices.find((s) => s.slug === slug)!);
+
+export const serviceGroups: { id: ServiceGroup; name: string; text: string }[] = [
+  { id: "elektro", name: "Elektro", text: "Elektroinstalace, rozvaděče, revize a hromosvody, wallboxy." },
+  { id: "zabezpeceni", name: "Zabezpečení a sítě", text: "Kamery Dahua a Hikvision, alarmy Jablotron, videotelefony, datové sítě a Wi-Fi." },
+];
+export const servicesIn = (g: ServiceGroup) => services.filter((s) => s.group === g);
 export const serviceBySlug = (slug: string) => services.find((s) => s.slug === slug);

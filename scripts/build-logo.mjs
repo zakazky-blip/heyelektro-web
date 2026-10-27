@@ -80,6 +80,31 @@ fs.writeFileSync(`${OUT}/icon-square.svg`, icon(true, 0));
 fs.writeFileSync(`${OUT}/icon-maskable.svg`, icon(true, 0).replace('scale(1.18)', 'scale(0.95)'));
 console.log("written", Object.keys(files).length + 3, "files to", OUT);
 
+// Animovatelné logo pro hero úvodní stránky: oficiální stacked verze (ELEKTRO na střed pod značkou),
+// jednotlivé části mají třídy, aby je šlo animovat v CSS (kruh se „nakreslí“, blesky problesknou…).
+const hero = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-215 -205 430 470" class="lg" role="img" aria-label="Hey! Elektro"><title>Hey! Elektro</title>
+${mask("hk")}
+<g class="lg-mark">
+  <g mask="url(#hk)">
+    <circle class="lg-ring" r="150" fill="none" stroke="${Y}" stroke-width="${RING_W}" pathLength="1" transform="rotate(-118)"/>
+    <circle class="lg-orbit" r="150" fill="none" stroke="#FFF3C2" stroke-width="${RING_W + 1}" stroke-linecap="round" pathLength="1" transform="rotate(-118)"/>
+    <path class="lg-swoosh" d="${fmt(SWOOSH)}" fill="${Y}"/>
+  </g>
+  <g transform="${TEXT_M}">
+    <g class="lg-h"><path d="${fmt(H)}" fill="${Y}" stroke="${Y}" stroke-width="3" stroke-linejoin="round"/></g>
+    <g class="lg-ey"><path d="${fmt(EY)}" fill="none" stroke="${W}" stroke-width="${EY_W}" stroke-linejoin="round"/></g>
+    <g class="lg-ex"><path d="${fmt(EXCL)}" stroke="${Y}" stroke-width="${EXCL_W}"/><path d="${fmt(DOT)}" fill="${Y}" stroke="${Y}" stroke-width="2"/></g>
+  </g>
+</g>
+<g class="lg-word" transform="translate(-154.5 245.5)">
+  <clipPath id="hek"><rect x="-5" y="-25" width="320" height="25"/></clipPath>
+  <path d="${fmt(ELEKTRO)}" fill="none" stroke="${W}" stroke-width="5.6" clip-path="url(#hek)"/>
+</g>
+</svg>\n`;
+fs.mkdirSync("src/assets/brand", { recursive: true });
+fs.writeFileSync("src/assets/brand/logo-hero.svg", hero);
+fs.copyFileSync(`${OUT}/logo-stacked-dark.svg`, "src/assets/brand/logo-stacked-dark.svg");
+
 // Lettering only ("Hey!" without the ring) for large supergraphics. viewBox fitted from Inkscape bbox query.
 const LVB = process.env.LVB || "-181 -99 361.5 198";
 fs.writeFileSync(`${OUT}/logo-lettering.svg`, svg(LVB, `<g id="lt">${text(onDark)}</g>`, "Hey!"));

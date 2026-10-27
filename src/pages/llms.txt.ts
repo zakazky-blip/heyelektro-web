@@ -10,7 +10,7 @@ export const GET: APIRoute = async () => {
   const u = (p: string) => `${site.url}${p}`;
   const body = `# ${site.brand} (${site.legalName})
 
-> Kamerové systémy Dahua a Hikvision, zabezpečení Jablotron a elektrické rozvaděče. Dále elektroinstalace, revize a hromosvody, wallboxy, datové sítě a videotelefony. Sídlo v Zábřehu (Olomoucký kraj), působnost hlavně Olomoucký kraj, východní Čechy (Pardubický a Královéhradecký kraj), Opava a Ostrava; větší zakázky po celé ČR.
+> Elektrikářská firma: elektroinstalace, elektrické rozvaděče, revize a hromosvody, wallboxy. Zabezpečení: kamerové systémy Dahua a Hikvision, alarmy Jablotron, videotelefony a datové sítě. Sídlo v Zábřehu (Olomoucký kraj), působnost hlavně Olomoucký kraj, východní Čechy (Pardubický a Královéhradecký kraj), Opava a Ostrava; větší zakázky po celé ČR.
 
 - Sídlo: ${site.address.street}, ${site.address.zip} ${site.address.city}
 - Telefon: ${site.phone.intl}
@@ -28,7 +28,9 @@ ${locations.map((l) => `- [${l.name}](${u(`/lokality/${l.slug}`)})${l.km ? `: ${
 ## Poradna
 ${posts.map((p) => `- [${p.data.title}](${u(`/poradna/${p.id}`)}): ${p.data.description}`).join("\n")}
 
-## Kontakt
+## Další
+- [Časté dotazy](${u("/caste-dotazy")})
+- [O nás](${u("/o-nas")})
 - [Kontakt a poptávka](${u("/kontakt")})
 `;
   return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8" } });

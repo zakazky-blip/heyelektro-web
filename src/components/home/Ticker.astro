@@ -1,0 +1,46 @@
+---
+// Žlutý pás se všemi službami, plynule běží do strany. Dekorativní (služby jsou v navigaci i v přehledu níže),
+// proto aria-hidden. Při prefers-reduced-motion stojí a zalomí se na střed.
+import { services } from "../../data/services";
+import Icon from "../Icon.astro";
+
+const items = services.map((s) => s.name);
+---
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker__vp">
+    <div class="ticker__track">
+      {[0, 1].map(() => (
+        <ul class="ticker__group">
+          {items.map((t) => (
+            <li><Icon name="bolt" size={22} class="ticker__bolt" /><span>{t}</span></li>
+          ))}
+        </ul>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .ticker { position: relative; overflow: hidden; background: var(--color-hey); color: var(--color-night); }
+  /* Text k okrajům obrazovky měkce mizí */
+  .ticker__vp { overflow: hidden; /* taste-skill-ignore: maska, ne barevný přechod */ mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+  .ticker__track { display: flex; width: max-content; }
+  .ticker__group { list-style: none; margin: 0; padding: clamp(14px, 1.6vw, 20px) 0; display: flex; align-items: center; }
+  .ticker__group li { display: flex; align-items: center; gap: clamp(14px, 1.4vw, 22px); padding-inline: clamp(14px, 1.4vw, 22px); white-space: nowrap; font-size: clamp(1.15rem, 0.9rem + 0.9vw, 1.75rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+  .ticker__group :global(.ticker__bolt) { flex: none; fill: var(--color-night); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ticker__track { animation: ticker 46s linear infinite; }
+    @media (hover: hover) and (pointer: fine) {
+      .ticker:hover .ticker__track { animation-play-state: paused; }
+    }
+  }
+  @keyframes ticker { to { transform: translateX(-50%); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ticker__track { width: auto; }
+    .ticker__group { flex-wrap: wrap; justify-content: center; row-gap: 10px; }
+    .ticker__group + .ticker__group { display: none; }
+  }
+</style>
