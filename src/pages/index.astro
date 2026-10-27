@@ -1,0 +1,60 @@
+---
+import Base from "../layouts/Base.astro";
+import Hero from "../components/home/Hero.astro";
+import Specializace from "../components/home/Specializace.astro";
+import ServiceIndex from "../components/home/ServiceIndex.astro";
+import Approach from "../components/home/Approach.astro";
+import Process from "../components/home/Process.astro";
+import Dojezd from "../components/Dojezd.astro";
+import Proof from "../components/home/Proof.astro";
+import Faq from "../components/Faq.astro";
+import FormSection from "../components/FormSection.astro";
+import PhoneCta from "../components/PhoneCta.astro";
+import { websiteSchema, faqSchema } from "../lib/schema";
+import type { Faq as FaqT } from "../data/services";
+
+const faq: FaqT[] = [
+  {
+    q: "Kam všude jezdíte?",
+    a: "Sídlíme v Zábřehu. Pravidelně jezdíme po celém Olomouckém kraji, na Svitavsko, Orlickoústecko, do Pardubic a Hradce Králové, do Opavy a Ostravy. Větší zakázky děláme po celé republice.",
+  },
+  {
+    q: "Kolik stojí kamerový systém nebo alarm?",
+    a: "Záleží na velikosti objektu, počtu kamer nebo detektorů a zvolené technice. Po obhlídce vám pošleme nabídku s rozpisem materiálu, práce i dopravy, takže cenu znáte dřív, než začneme.",
+  },
+  {
+    q: "Musí se kvůli kamerám nebo alarmu sekat do zdí?",
+    a: "Většinou ne. Alarm Jablotron namontujeme z bezdrátových prvků a kabely ke kamerám vedeme půdou, podhledem, chráničkou nebo lištou. Sekáme jen tam, kde to jinak nejde.",
+  },
+  {
+    q: "Děláte i klasické elektroinstalace?",
+    a: "Ano. Elektroinstalace novostaveb a rekonstrukcí, revize, hromosvody, wallboxy i menší opravy. Specializujeme se ale na kamery, zabezpečení a rozvaděče.",
+  },
+  {
+    q: "Jste opravdu certifikovaní?",
+    a: "Ano. Jsme certifikovaný montážní partner Jablotron a máme certifikace na kamerové systémy Dahua a Hikvision.",
+  },
+  {
+    q: "Co když bude potřeba systém rozšířit nebo opravit?",
+    a: "Zavolejte nám. Systémy, které jsme montovali, známe, máme k nim dokumentaci a umíme je rozšířit o další kamery, detektory nebo ovládání.",
+  },
+];
+---
+
+<Base
+  title="Kamery, alarmy Jablotron a rozvaděče | Hey! Elektro Zábřeh"
+  description="Certifikovaný partner Jablotron, Dahua a Hikvision ze Zábřehu. Kamerové systémy, zabezpečení, rozvaděče a elektroinstalace v Olomouckém kraji, východních Čechách, Opavě a Ostravě."
+  schema={[websiteSchema(), faqSchema(faq)]}
+  home
+>
+  <Hero />
+  <Specializace />
+  <ServiceIndex />
+  <Approach />
+  <Process />
+  <Dojezd />
+  <Proof />
+  <Faq faq={faq} />
+  <FormSection />
+  <PhoneCta />
+</Base>

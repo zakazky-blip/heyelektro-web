@@ -1,0 +1,103 @@
+---
+import { link } from "../../lib/url";
+import { Image } from "astro:assets";
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import FormSection from "../../components/FormSection.astro";
+import PhoneCta from "../../components/PhoneCta.astro";
+import { focusServices, otherServices } from "../../data/services";
+import ServiceCards from "../../components/ServiceCards.astro";
+import { photos, serviceImage } from "../../data/images";
+import { breadcrumbSchema } from "../../lib/schema";
+import { cz } from "../../lib/typo";
+
+const crumbs = [
+  { name: "Úvod", path: "/" },
+  { name: "Služby", path: "/sluzby" },
+];
+---
+
+<Base
+  title="Služby: kamery, alarmy Jablotron, rozvaděče, elektro | Hey! Elektro"
+  description="Kamerové systémy Dahua a Hikvision, zabezpečení Jablotron, rozvaděče, elektroinstalace, revize a hromosvody, wallboxy, datové sítě a videotelefony."
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHero crumbs={crumbs} title="Služby" lead="Specializujeme se na kamery, zabezpečení a rozvaděče. Elektroinstalace, revize, wallboxy, sítě a videotelefony děláme stejně pečlivě." photo={photos.rozvadecKabely} />
+
+  <section class="sfocus" aria-labelledby="sfocus-title">
+    <div class="wrap">
+      <h2 id="sfocus-title" class="sr-only">Specializace</h2>
+      {focusServices.map((s, i) => {
+        const p = photos[serviceImage[s.image]];
+        return (
+          <article class:list={["sfocus__row", { "sfocus__row--flip": i % 2 === 1 }]}>
+            <a href={link(`/sluzby/${s.slug}`)} class="sfocus__img rv" tabindex="-1" aria-hidden="true">
+              <Image src={p.src} alt="" widths={[480, 800, 1200]} sizes="(max-width: 1023px) 100vw, 50vw" loading={i === 0 ? "eager" : "lazy"} />
+            </a>
+            <div class="sfocus__text">
+              <h3 class="sfocus__title rv"><a href={link(`/sluzby/${s.slug}`)}>{cz(s.h1)}</a></h3>
+              <p class="sfocus__lead rv" style="--i:1">{cz(s.lead)}</p>
+              <ul class="sfocus__inc rv" style="--i:2">
+                {s.includes.slice(0, 4).map((it) => <li>{cz(it.title)}</li>)}
+              </ul>
+              <div class="sfocus__actions rv" style="--i:3">
+                <a href={link(`/sluzby/${s.slug}`)} class="btn btn-ghost">Více o službě</a>
+                <a href={link(`/kontakt?sluzba=${s.slug}#poptavka`)} class="btn btn-hey" data-track="cta" data-cta={`sluzby-${s.slug}`}>Poptat</a>
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="sother" aria-labelledby="sother-title">
+    <div class="wrap">
+      <h2 id="sother-title" class="t-h2 rv">Další služby</h2>
+      <div class="sother__cards">
+        <ServiceCards items={otherServices.map((s) => ({ slug: s.slug }))} cols={3} />
+      </div>
+    </div>
+  </section>
+
+  <FormSection />
+  <PhoneCta />
+</Base>
+
+<style>
+  .sfocus { padding-bottom: var(--section); }
+  .sfocus__row { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 96px); align-items: center; }
+  .sfocus__row + .sfocus__row { margin-top: clamp(72px, 9vw, 140px); }
+  .sfocus__row--flip .sfocus__img { order: 2; }
+  .sfocus__img { display: block; aspect-ratio: 5 / 4; overflow: hidden; background: var(--color-night-2); }
+  .sfocus__img :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 1000ms var(--ease-out); }
+  .sfocus__title { font-size: var(--fs-h2); letter-spacing: -0.035em; line-height: 1.04; }
+  .sfocus__title a { text-decoration: none; }
+  .sfocus__lead { margin-top: 20px; max-width: 44ch; }
+  .sfocus__inc { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 8px; color: var(--color-muted); }
+  .sfocus__inc li::before { content: ""; display: inline-block; width: 8px; height: 8px; background: var(--color-hey); margin-right: 12px; transform: translateY(-2px) skewX(-15deg); }
+  .sfocus__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 32px; }
+
+  .sother { padding-block: var(--section); background: var(--color-night-2); }
+  .sother__cards { margin-top: clamp(32px, 4vw, 48px); }
+  .sother :global(.scards__a) { background: var(--color-night-3); }
+  .sother__list { list-style: none; margin: clamp(32px, 4vw, 48px) 0 0; padding: 0; display: grid; gap: 6px; }
+  .sother__list a { display: grid; grid-template-columns: minmax(0, 18rem) 1fr auto; align-items: center; gap: 8px 32px; min-height: 76px; padding: 14px 24px; background: var(--color-night-3); text-decoration: none; transition: background-color 160ms var(--ease-out); }
+  .sother__name { font-size: var(--fs-lead); font-weight: 700; letter-spacing: -0.02em; }
+  .sother__short { color: var(--color-muted); }
+  .sother__arrow { font-size: 1.4rem; color: var(--color-hey); transition: transform 200ms var(--ease-out); }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sfocus__img:hover :global(img) { transform: scale(1.03); }
+    .sfocus__title a:hover { color: var(--color-hey); }
+    .sother__list a:hover { background: #2c3846; }
+    .sother__list a:hover .sother__arrow { transform: translateX(6px); }
+  }
+  @media (max-width: 1023px) {
+    .sfocus__row { grid-template-columns: 1fr; }
+    .sfocus__row--flip .sfocus__img { order: 0; }
+    .sother__list a { grid-template-columns: 1fr auto; }
+    .sother__short { grid-column: 1; grid-row: 2; }
+    .sother__arrow { grid-row: 1 / span 2; grid-column: 2; }
+  }
+</style>

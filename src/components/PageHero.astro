@@ -1,0 +1,83 @@
+---
+import { link } from "../lib/url";
+// Hlavička podstránky: drobečky, H1, perex, akce vlevo; vpravo fotka nebo vlastní obsah (slot „aside“).
+import { Picture } from "astro:assets";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import type { Photo } from "../data/images";
+import { site } from "../data/site";
+import { cz } from "../lib/typo";
+
+interface Props {
+  crumbs: { name: string; path: string }[];
+  title: string;
+  lead?: string;
+  photo?: Photo;
+  actions?: boolean;
+  ctaHref?: string;
+  ctaLabel?: string;
+  compact?: boolean;
+}
+const { crumbs, title, lead, photo, actions = true, ctaHref = "#poptavka", ctaLabel = "Nezávazná poptávka", compact = false } = Astro.props;
+const hasAside = !!photo || Astro.slots.has("aside");
+---
+
+<section class:list={["ph", { "ph--aside": hasAside, "ph--compact": compact }]}>
+  <div class="wrap ph__grid">
+    <div class="ph__copy">
+      <Breadcrumbs items={crumbs} />
+      <h1 class="ph__title">{cz(title)}</h1>
+      {lead && <p class="ph__lead">{cz(lead)}</p>}
+      {actions && (
+        <div class="ph__actions">
+          <a href={link(ctaHref)} class="btn btn-hey" data-track="cta" data-cta="page-hero">{ctaLabel}</a>
+          <a href={site.phone.href} class="btn btn-ghost" data-track="phone">Zavolat {site.phone.display}</a>
+        </div>
+      )}
+      <slot />
+    </div>
+    {hasAside && (
+      <div class="ph__aside">
+        {photo ? (
+          <Picture src={photo.src} alt={photo.alt} formats={["avif", "webp"]} widths={[480, 720, 960, 1280]} sizes="(max-width: 1023px) 100vw, 42vw" loading="eager" fetchpriority="high" class="ph__img" />
+        ) : (
+          <slot name="aside" />
+        )}
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .ph { padding: clamp(28px, 4vw, 56px) 0 var(--section); }
+  .ph__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(16px, 2vw, 32px); align-items: center; }
+  .ph__copy { grid-column: 1 / span 10; }
+  .ph--aside .ph__copy { grid-column: 1 / span 7; }
+  .ph__aside { grid-column: 8 / span 5; }
+  .ph__title { margin-top: clamp(40px, 6vw, 96px); font-size: var(--fs-display); line-height: 1; letter-spacing: -0.045em; max-width: 21ch; }
+  
+  .ph__lead { margin-top: clamp(20px, 2.5vw, 32px); font-size: var(--fs-lead); line-height: 1.42; max-width: 44ch; }
+  .ph__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(28px, 3vw, 40px); }
+  .ph__aside :global(picture) { display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--color-night-2); }
+  .ph__aside :global(img) { width: 100%; height: 100%; object-fit: cover; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ph__copy > :global(*) { animation: ph-in 800ms var(--ease-out) both; }
+    .ph__title { animation-delay: 40ms !important; }
+    .ph__lead { animation-delay: 110ms !important; }
+    .ph__actions { animation-delay: 180ms !important; }
+    .ph__aside { animation: ph-img 1000ms var(--ease-out) 120ms both; }
+    @keyframes ph-in { from { opacity: 0; transform: translateY(20px); } }
+    @keyframes ph-img { from { opacity: 0; transform: scale(0.97); } }
+  }
+
+  @media (max-width: 1023px) {
+    .ph__copy, .ph--aside .ph__copy, .ph__aside { grid-column: 1 / -1; }
+    .ph__aside { margin-top: 40px; }
+    .ph__aside :global(picture) { aspect-ratio: 4 / 3; }
+    .ph__title { margin-top: 32px; }
+  }
+  @media (max-width: 767px) {
+    .ph__actions .btn { flex: 1 1 100%; }
+    .ph__actions .btn-ghost { display: none; }
+  }
+</style>

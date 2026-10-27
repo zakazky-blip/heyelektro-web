@@ -1,0 +1,59 @@
+---
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import { breadcrumbSchema } from "../lib/schema";
+
+interface Props { title: string; description: string; path: string; updated: string; lead?: string }
+const { title, description, path, updated, lead } = Astro.props;
+const crumbs = [
+  { name: "Úvod", path: "/" },
+  { name: title, path },
+];
+---
+
+<Base title={`${title} | Hey! Elektro`} description={description} schema={[breadcrumbSchema(crumbs)]}>
+  <article class="legal">
+    <div class="wrap legal__grid">
+      <header class="legal__head">
+        <Breadcrumbs items={crumbs} />
+        <div class="legal__headgrid">
+          <h1 class="rv">{title}</h1>
+          <div class="legal__meta rv" style="--i:1">
+            {lead && <p class="legal__lead">{lead}</p>}
+            <p class="legal__upd">Platné od {updated}</p>
+          </div>
+        </div>
+      </header>
+      <div class="legal__body">
+        <slot />
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .legal { padding: clamp(28px, 4vw, 56px) 0 var(--section); }
+  .legal__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(16px, 2vw, 32px); }
+  .legal__head { grid-column: 1 / -1; }
+  .legal__headgrid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px clamp(24px, 4vw, 64px); align-items: end; margin-top: clamp(40px, 6vw, 96px); }
+  .legal__head h1 { margin-top: 0; font-size: var(--fs-display); letter-spacing: -0.045em; line-height: 1; max-width: 18ch; }
+  .legal__lead { margin-top: 0; font-size: var(--fs-lead); line-height: 1.42; max-width: 48ch; }
+  .legal__upd { margin-top: 16px; color: var(--color-muted); }
+  .legal__body { grid-column: 3 / -1; margin-top: clamp(48px, 6vw, 80px); }
+  .legal__body :global(h2) { font-size: var(--fs-lead); letter-spacing: -0.02em; margin: 2.2em 0 0.6em; }
+  .legal__body :global(h2:first-child) { margin-top: 0; }
+  .legal__body :global(p), .legal__body :global(li) { max-width: 68ch; }
+  .legal__body :global(p + p) { margin-top: 1em; }
+  .legal__body :global(ul) { padding-left: 1.2em; margin: 0.8em 0; display: grid; gap: 0.4em; }
+  .legal__body :global(a) { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
+  .legal__body :global(table) { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 0.95rem; }
+  .legal__body :global(th), .legal__body :global(td) { text-align: left; padding: 10px 12px 10px 0; vertical-align: top; border-bottom: 1px solid var(--color-night-3); }
+  .legal__body :global(th) { color: var(--color-muted); font-weight: 500; }
+  @media (max-width: 1023px) { .legal__body { grid-column: 1 / -1; } .legal__headgrid { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) {
+    .legal__body :global(table), .legal__body :global(tbody), .legal__body :global(tr), .legal__body :global(td) { display: block; }
+    .legal__body :global(thead) { display: none; }
+    .legal__body :global(td) { border: 0; padding: 2px 0; }
+    .legal__body :global(tr) { padding: 12px 0; border-bottom: 1px solid var(--color-night-3); }
+  }
+</style>

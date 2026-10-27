@@ -1,0 +1,118 @@
+---
+import { link } from "../../lib/url";
+import { Picture } from "astro:assets";
+import { photos } from "../../data/images";
+import { site } from "../../data/site";
+import { cz } from "../../lib/typo";
+import { inlineSvg } from "../../lib/svg";
+import lettering from "../../assets/brand/logo-lettering.svg?raw";
+
+const p = photos.hero;
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__photo">
+    <Picture
+      src={p.src}
+      alt={p.alt}
+      formats={["avif", "webp"]}
+      widths={[480, 720, 960, 1280, 1600]}
+      sizes="(max-width: 1023px) 100vw, 47vw"
+      loading="eager"
+      fetchpriority="high"
+      class="hero__img"
+    />
+  </div>
+
+  <div class="hero__copy">
+    <h1 id="hero-title" class="hero__title"><span class="sr-only">Hey! Elektro: </span>{cz("Kamery, alarmy Jablotron a rozvaděče")}</h1>
+    <p class="hero__lead">{cz("Certifikovaní technici ze Zábřehu. Kamery Dahua a Hikvision, zabezpečení Jablotron a rozvaděče pro Olomoucký kraj, východní Čechy, Opavu a Ostravu.")}</p>
+    <div class="hero__actions">
+      <a href={link("/kontakt#poptavka")} class="btn btn-hey" data-track="cta" data-cta="hero">Nezávazná poptávka</a>
+      <a href={site.phone.href} class="btn btn-ghost" data-track="phone">Zavolat {site.phone.display}</a>
+    </div>
+  </div>
+
+  <div class="hero__name">
+    <Fragment set:html={inlineSvg(lettering, "hero-l", "hero__lettering")} />
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: max(620px, 100svh);
+    margin-top: calc(-76px - env(safe-area-inset-top, 0px));
+    display: grid;
+    grid-template-columns: 47vw minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+    overflow: clip;
+  }
+  .hero__photo {
+    grid-column: 1; grid-row: 1 / span 2;
+    position: relative;
+    margin: 20px 0 20px 20px;
+    background: var(--color-night-2);
+    overflow: hidden;
+  }
+  .hero__photo :global(picture) { position: absolute; inset: 0; }
+  .hero__photo :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; }
+
+  .hero__copy {
+    grid-column: 2; grid-row: 1;
+    align-self: start;
+    width: min(100%, 40rem);
+    padding: clamp(104px, 14svh, 150px) var(--gutter) 32px clamp(28px, 5vw, 88px);
+    position: relative; z-index: 2;
+  }
+  .hero__title { font-size: var(--fs-h2); line-height: 1.04; letter-spacing: -0.035em; }
+  .hero__lead { margin-top: 24px; font-size: var(--fs-lead); line-height: 1.42; max-width: 38ch; }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+
+  .hero__name {
+    grid-column: 2; grid-row: 2;
+    position: relative; z-index: 3;
+    margin: 0 var(--gutter) 40px -10vw;
+    display: flex; justify-content: flex-end;
+    pointer-events: none;
+    transform-origin: 60% 100%;
+  }
+  .hero__name :global(.hero__lettering) {
+    width: clamp(32vw, (100svh - 530px) * 1.826, 100%);
+    height: auto;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hero__name { animation: hero-name linear both; animation-timeline: scroll(root); animation-range: 0 90svh; }
+      @keyframes hero-name { to { transform: scale(0.93) translateY(-3%); } }
+      .hero__photo :global(img) { animation: hero-photo linear both; animation-timeline: scroll(root); animation-range: 0 100svh; }
+      @keyframes hero-photo { from { transform: scale(1.06); } to { transform: scale(1); } }
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__copy > * { animation: hero-in 900ms var(--ease-out) both; }
+    .hero__lead { animation-delay: 90ms !important; }
+    .hero__actions { animation-delay: 180ms !important; }
+    .hero__name :global(.hero__lettering) { animation: hero-letters 1100ms var(--ease-out) 120ms both; }
+    @keyframes hero-in { from { opacity: 0; transform: translateY(24px); } }
+    @keyframes hero-letters { from { opacity: 0; transform: translateY(6%) skewX(-4deg); } }
+  }
+
+  @media (max-width: 1023px) {
+    .hero { margin-top: 0; grid-template-columns: 1fr; grid-template-rows: auto; min-height: 0; padding-bottom: 8px; }
+    .hero__photo { grid-row: 1; margin: 0 12px; height: 32svh; min-height: 220px; }
+    .hero__name { grid-column: 1; grid-row: 2; margin: min(-9vw, -40px) 12px 0 auto; width: min(86vw, 560px); justify-content: flex-end; }
+    .hero__name :global(.hero__lettering) { width: 100%; }
+    .hero__copy { grid-column: 1; grid-row: 3; padding: 20px var(--gutter) 0; width: 100%; }
+    
+    .hero__lead { margin-top: 14px; }
+    .hero__actions { margin-top: 22px; }
+  }
+  @media (max-width: 767px) {
+    .hero__photo { height: 32svh; }
+    .hero__actions .btn { flex: 1 1 100%; }
+    .hero__actions .btn-ghost { display: none; }
+  }
+</style>

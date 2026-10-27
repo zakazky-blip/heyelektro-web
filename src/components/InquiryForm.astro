@@ -1,0 +1,295 @@
+---
+import { link } from "../lib/url";
+// Poptávkový formulář. Tři režimy podle nasazení:
+//   api       – Vercel: POST na /api/poptavka (Resend), bez JS server přesměruje na /dekujeme
+//   web3forms – GitHub Pages s klíčem PUBLIC_WEB3FORMS_KEY: odeslání přes Web3Forms
+//   mailto    – GitHub Pages bez klíče: otevře e-mail s vyplněnou poptávkou
+// Událost form_submitted jde do dataLayer až po potvrzeném odeslání (ne v režimu mailto).
+import { travelTable } from "../data/locations";
+import { cz } from "../lib/typo";
+import { site } from "../data/site";
+
+interface Props {
+  id?: string;
+  service?: string; // předvybraná služba (slug)
+  location?: string; // předvyplněná obec
+  paper?: boolean; // světlé pozadí
+}
+const { id = "poptavka", service = "", location = "", paper = false } = Astro.props;
+
+const needs = [
+  { value: "kamerove-systemy", label: "Kamery" },
+  { value: "zabezpeceni-jablotron", label: "Alarm Jablotron" },
+  { value: "rozvadece", label: "Rozvaděč" },
+  { value: "elektroinstalace", label: "Elektroinstalace" },
+  { value: "revize-a-hromosvody", label: "Revize, hromosvod" },
+  { value: "wallboxy", label: "Wallbox" },
+  { value: "datove-site-a-wifi", label: "Síť a Wi-Fi" },
+  { value: "videotelefony-a-pristupove-systemy", label: "Videotelefon" },
+  { value: "jine", label: "Něco jiného" },
+];
+const objects = ["Rodinný dům", "Byt", "Firma", "Chata", "Jiné"];
+const fid = (n: string) => `${id}-${n}`;
+
+const target = import.meta.env.PUBLIC_DEPLOY_TARGET;
+const w3key = import.meta.env.PUBLIC_WEB3FORMS_KEY as string | undefined;
+const mode = target === "github" ? (w3key ? "web3forms" : "mailto") : "api";
+const origin = (Astro.site ?? new URL(site.url)).origin;
+const thanksUrl = origin + link("/dekujeme");
+const action = mode === "api" ? link("/api/poptavka") : mode === "web3forms" ? "https://api.web3forms.com/submit" : `mailto:${site.email}`;
+---
+
+<form class:list={["iform", { "on-paper": paper }]} id={id} action={action} method="post" enctype={mode === "mailto" ? "text/plain" : undefined} novalidate data-inquiry data-mode={mode} data-thanks={link("/dekujeme")} data-email={site.email}>
+  {mode === "web3forms" && (
+    <Fragment>
+      <input type="hidden" name="access_key" value={w3key} />
+      <input type="hidden" name="subject" value="Poptávka z webu Hey! Elektro" />
+      <input type="hidden" name="from_name" value="Web Hey! Elektro" />
+      <input type="hidden" name="redirect" value={thanksUrl} />
+    </Fragment>
+  )}
+  <fieldset class="iform__chips">
+    <legend>Co potřebujete?</legend>
+    <div class="chips">
+      {needs.map((n) => (
+        <label class="chip">
+          <input type="checkbox" name="sluzby" value={n.value} checked={n.value === service} />
+          <span>{n.label}</span>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+
+  <fieldset class="iform__chips">
+    <legend>O jaký objekt jde?</legend>
+    <div class="chips">
+      {objects.map((o) => (
+        <label class="chip">
+          <input type="radio" name="objekt" value={o} />
+          <span>{o}</span>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+
+  <div class="iform__grid">
+    <div class="field">
+      <label for={fid("jmeno")}>Jméno a příjmení</label>
+      <input id={fid("jmeno")} name="jmeno" type="text" autocomplete="name" required maxlength="120" aria-describedby={fid("jmeno-err")} />
+      <p class="err" id={fid("jmeno-err")} hidden>Napište prosím, jak vás oslovit.</p>
+    </div>
+    <div class="field">
+      <label for={fid("telefon")}>Telefon</label>
+      <input id={fid("telefon")} name="telefon" type="tel" inputmode="tel" autocomplete="tel" required maxlength="30" placeholder="např. 777 123 456" aria-describedby={fid("telefon-err")} />
+      <p class="err" id={fid("telefon-err")} hidden>Zadejte prosím telefon, ať vám můžeme zavolat.</p>
+    </div>
+    <div class="field">
+      <label for={fid("email")}>E-mail <span class="opt">(nepovinné)</span></label>
+      <input id={fid("email")} name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="none" maxlength="160" aria-describedby={fid("email-err")} />
+      <p class="err" id={fid("email-err")} hidden>Tenhle e-mail nevypadá správně.</p>
+    </div>
+    <div class="field">
+      <label for={fid("obec")}>Obec nebo město</label>
+      <input id={fid("obec")} name="obec" type="text" autocomplete="address-level2" list={fid("obce")} maxlength="80" value={location} />
+      <datalist id={fid("obce")}>
+        {travelTable.map((t) => <option value={t.name} />)}
+      </datalist>
+    </div>
+    <div class="field iform__full">
+      <label for={fid("zprava")}>Popište, co řešíte <span class="opt">(nepovinné)</span></label>
+      <textarea id={fid("zprava")} name="zprava" maxlength="3000" rows="4" placeholder="Např. chci 4 kamery na rodinný dům a vidět je v mobilu."></textarea>
+    </div>
+  </div>
+
+  <div class="iform__hp" aria-hidden="true">
+    <label>Nevyplňujte <input type="text" name="web" tabindex="-1" autocomplete="off" /></label>
+  </div>
+  <input type="hidden" name="t" value="" data-ts />
+  <input type="hidden" name="stranka" value={Astro.url.pathname} />
+
+  <div class="iform__foot">
+    <button type="submit" class="btn btn-hey iform__submit" data-submit>
+      <span data-label>Odeslat poptávku</span>
+    </button>
+    <p class="iform__note t-small" set:html={cz(`Poptávka je nezávazná. Údaje použijeme jen k odpovědi na ni, podrobnosti v <a href="${link("/ochrana-osobnich-udaju")}" class="link-u">zásadách ochrany osobních údajů</a>.`)} />
+  </div>
+  <p class="iform__status" role="status" aria-live="polite" data-status></p>
+</form>
+
+<style>
+  .iform { display: grid; gap: 28px; }
+  .iform fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .iform legend { font-weight: 500; font-size: var(--fs-body); margin-bottom: 12px; padding: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; cursor: pointer; }
+  .chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .chip span {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px;
+    background: var(--color-night-2); color: var(--color-ink); font-weight: 500; font-size: var(--fs-body);
+    transition: background-color 140ms var(--ease-out), color 140ms var(--ease-out), transform 120ms var(--ease-out);
+    user-select: none; -webkit-user-select: none;
+  }
+  .chip:active span { transform: scale(0.97); }
+  .chip input:checked + span { background: var(--color-hey); color: var(--color-night); }
+  .chip input:focus-visible + span { outline: 3px solid var(--color-hey); outline-offset: 2px; }
+  .on-paper .chip span { background: var(--color-paper-field); color: var(--color-night); }
+  .on-paper .chip input:checked + span { background: var(--color-night); color: #fff; }
+  .on-paper .chip input:focus-visible + span { outline-color: var(--color-night); }
+
+  .iform__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 18px; }
+  .iform__full { grid-column: 1 / -1; }
+  .opt { color: var(--color-muted); font-weight: 400; }
+  .on-paper .opt { color: var(--color-paper-muted); }
+  .iform__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; } /* taste-skill-ignore: skryté pole proti spamu */
+  .iform__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
+  .iform__submit { min-height: 58px; padding: 0 34px; }
+  .iform__submit[aria-busy="true"] { opacity: 0.7; pointer-events: none; }
+  .iform__note { flex: 1 1 260px; color: var(--color-muted); }
+  .on-paper .iform__note { color: var(--color-paper-muted); }
+  .iform__status:empty { display: none; }
+  .iform__status { padding: 14px 16px; background: var(--color-night-3); font-weight: 500; }
+  .iform__status.is-error { background: #3a1d1d; color: #ffd3cd; }
+  .on-paper .iform__status { background: #fff; }
+  @media (hover: hover) and (pointer: fine) {
+    .chip:hover span { background: var(--color-night-3); }
+    .chip input:checked:hover + span { background: #ffd84d; }
+    .on-paper .chip:hover span { background: #e3e7eb; }
+    .on-paper .chip input:checked:hover + span { background: #1d2733; }
+  }
+  @media (max-width: 640px) {
+    .iform__grid { grid-template-columns: 1fr; }
+    .iform__submit { width: 100%; }
+  }
+</style>
+
+<script>
+  type Push = Record<string, unknown>;
+  const dl = () => ((window as unknown as { dataLayer: Push[] }).dataLayer ||= []);
+
+  document.querySelectorAll<HTMLFormElement>("form[data-inquiry]").forEach((form) => {
+    const ts = form.querySelector<HTMLInputElement>("[data-ts]");
+    if (ts) ts.value = String(Date.now());
+
+    // Předvyplnění z odkazů typu /kontakt?obec=Olomouc&sluzba=kamerove-systemy
+    const qp = new URLSearchParams(location.search);
+    const obec = qp.get("obec");
+    const obecInput = form.elements.namedItem("obec") as HTMLInputElement | null;
+    if (obec && obecInput && !obecInput.value) obecInput.value = obec.slice(0, 80);
+    const sluzba = qp.get("sluzba");
+    if (sluzba) form.querySelectorAll<HTMLInputElement>("input[name=sluzby]").forEach((c) => { if (c.value === sluzba) c.checked = true; });
+    let started = false;
+    form.addEventListener("input", () => {
+      if (started) return;
+      started = true;
+      dl().push({ event: "form_start", form_id: form.id });
+    }, { once: false });
+
+    const status = form.querySelector<HTMLElement>("[data-status]")!;
+    const btn = form.querySelector<HTMLButtonElement>("[data-submit]")!;
+    const label = form.querySelector<HTMLElement>("[data-label]")!;
+
+    const setErr = (name: string, show: boolean) => {
+      const input = form.elements.namedItem(name) as HTMLInputElement | null;
+      const err = input && form.querySelector<HTMLElement>(`#${input.getAttribute("aria-describedby")}`);
+      if (!input || !err) return;
+      input.setAttribute("aria-invalid", String(show));
+      err.hidden = !show;
+    };
+
+    const validate = () => {
+      const v = (n: string) => ((form.elements.namedItem(n) as HTMLInputElement)?.value || "").trim();
+      const nameOk = v("jmeno").length >= 2;
+      const phoneOk = v("telefon").replace(/[^\d+]/g, "").length >= 9;
+      const email = v("email");
+      const emailOk = !email || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+      setErr("jmeno", !nameOk);
+      setErr("telefon", !phoneOk);
+      setErr("email", !emailOk);
+      const firstBad = [!nameOk && "jmeno", !phoneOk && "telefon", !emailOk && "email"].find(Boolean) as string | undefined;
+      if (firstBad) (form.elements.namedItem(firstBad) as HTMLInputElement).focus();
+      return !firstBad;
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.textContent = "";
+      status.classList.remove("is-error");
+      if (!validate()) return;
+
+      const data = new FormData(form);
+      const ids = (window as unknown as { heyClickIds?: () => Record<string, string> }).heyClickIds?.() || {};
+      for (const [k, val] of Object.entries(ids)) data.set(k, val);
+
+      const mode = form.dataset.mode;
+      const thanks = form.dataset.thanks || "/dekujeme";
+      const isBot = String(data.get("web") || "") !== "" || Date.now() - Number(data.get("t") || 0) < 3000;
+
+      // Bez služby pro odesílání: připravíme e-mail s vyplněnou poptávkou.
+      if (mode === "mailto") {
+        const names = [...form.querySelectorAll<HTMLInputElement>("input[name=sluzby]:checked")].map((c) => c.nextElementSibling?.textContent?.trim()).join(", ");
+        const body = [
+          `Jméno: ${data.get("jmeno")}`,
+          `Telefon: ${data.get("telefon")}`,
+          `E-mail: ${data.get("email") || "–"}`,
+          `Obec: ${data.get("obec") || "–"}`,
+          `Objekt: ${data.get("objekt") || "–"}`,
+          `Služby: ${names || "–"}`,
+          "",
+          String(data.get("zprava") || ""),
+        ].join("\n");
+        dl().push({ event: "form_mailto", form_id: form.id });
+        window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent("Poptávka z webu")}&body=${encodeURIComponent(body)}`;
+        status.textContent = "Otevřeli jsme vám e-mail s vyplněnou poptávkou. Stačí ho odeslat. Kdyby se neotevřel, zavolejte nám na 602 270 211.";
+        return;
+      }
+
+      btn.setAttribute("aria-busy", "true");
+      label.textContent = "Odesílám…";
+      try {
+        let leadId = "";
+        if (isBot) {
+          window.location.href = thanks;
+          return;
+        } else if (mode === "web3forms") {
+          const payload: Record<string, string> = {};
+          for (const [k, val] of data.entries()) if (!["sluzby", "web", "t", "redirect"].includes(k)) payload[k] = String(val);
+          payload.sluzby = data.getAll("sluzby").join(", ");
+          payload.subject = `Poptávka: ${payload.sluzby || "obecná"}${payload.obec ? " – " + payload.obec : ""} (${payload.jmeno})`;
+          const res = await fetch("https://api.web3forms.com/submit", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(payload) });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok || !json.success) throw new Error("Odeslání se nepovedlo.");
+          leadId = `HE-${Date.now().toString(36).toUpperCase()}`;
+        } else {
+          const res = await fetch(form.action, { method: "POST", body: data, headers: { Accept: "application/json" } });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok || !json.ok) throw new Error(json.error || "Odeslání se nepovedlo.");
+          if (!String(json.id || "").startsWith("HE-")) { window.location.href = thanks; return; }
+          leadId = json.id;
+        }
+        const json = { id: leadId };
+
+        // Konverze až po potvrzení serverem. Údaje pro Enhanced Conversions použije Google tag jen se souhlasem.
+        const phone = String(data.get("telefon") || "").replace(/[^\d+]/g, "");
+        dl().push({
+          event: "form_submitted",
+          form_id: form.id,
+          lead_id: json.id,
+          services: data.getAll("sluzby").join(","),
+          object_type: data.get("objekt") || "",
+          location: data.get("obec") || "",
+          user_data: {
+            email: String(data.get("email") || "").trim().toLowerCase() || undefined,
+            phone_number: phone ? (phone.startsWith("+") ? phone : "+420" + phone.replace(/^00420|^420/, "")) : undefined,
+          },
+        });
+        sessionStorage.setItem("hey-lead", json.id);
+        window.setTimeout(() => (window.location.href = thanks), 250);
+      } catch (err) {
+        status.textContent = `${(err as Error).message} Zavolejte nám prosím na 602 270 211.`;
+        status.classList.add("is-error");
+        btn.removeAttribute("aria-busy");
+        label.textContent = "Odeslat poptávku";
+      }
+    });
+  });
+</script>

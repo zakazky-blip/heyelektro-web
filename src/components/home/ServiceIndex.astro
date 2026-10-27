@@ -1,0 +1,120 @@
+---
+import { link } from "../../lib/url";
+// Rejstřík služeb: tři sloupce názvů v jedné velikosti, popis se ukáže v pevném místě vpravo.
+import { cz } from "../../lib/typo";
+
+const groups = [
+  {
+    name: "Zabezpečení",
+    summary: "Kamery, alarmy a vstupy, které ovládáte z telefonu.",
+    items: [
+      { label: "Kamerové systémy", href: "/sluzby/kamerove-systemy", desc: "Dahua a Hikvision, noční vidění, záznam u vás a obraz v mobilu." },
+      { label: "Alarmy Jablotron", href: "/sluzby/zabezpeceni-jablotron", desc: "JABLOTRON 100+, bezdrátově a bez sekání, ovládání z aplikace." },
+      { label: "Pult centralizované ochrany", href: "/sluzby/zabezpeceni-jablotron", desc: "Při poplachu vyjíždí zásahová jednotka." },
+      { label: "Hlídání požáru a vody", href: "/sluzby/zabezpeceni-jablotron", desc: "Detektory kouře a zaplavení posílají zprávu do telefonu." },
+      { label: "Videotelefony", href: "/sluzby/videotelefony-a-pristupove-systemy", desc: "Kdo zvoní, uvidíte i v mobilu. Branku otevřete odkudkoli." },
+      { label: "Přístupové systémy", href: "/sluzby/videotelefony-a-pristupove-systemy", desc: "Čtečky karet a čipů, kódové klávesnice, elektrické zámky." },
+    ],
+  },
+  {
+    name: "Elektro",
+    summary: "Rozvaděče, elektroinstalace, revize a nabíjení aut.",
+    items: [
+      { label: "Výměna rozvaděčů", href: "/sluzby/rozvadece", desc: "Pojistky pryč, jističe, proudové chrániče a přepěťová ochrana." },
+      { label: "Rozvaděče pro FVE a wallbox", href: "/sluzby/rozvadece", desc: "Úprava rozvaděče pro nové zdroje a velké spotřebiče." },
+      { label: "Elektroinstalace", href: "/sluzby/elektroinstalace", desc: "Novostavby, rekonstrukce bytů a domů, firemní prostory." },
+      { label: "Revize elektro", href: "/sluzby/revize-a-hromosvody", desc: "Výchozí a pravidelné revize s revizní zprávou." },
+      { label: "Hromosvody", href: "/sluzby/revize-a-hromosvody", desc: "Návrh, montáž a revize, úprava kvůli fotovoltaice." },
+      { label: "Wallboxy", href: "/sluzby/wallboxy", desc: "Nabíjení elektroauta doma i ve firmě, řízení výkonu." },
+    ],
+  },
+  {
+    name: "Sítě",
+    summary: "Kabeláž a Wi-Fi, na které běží kamery i celý dům.",
+    items: [
+      { label: "Datové rozvody", href: "/sluzby/datove-site-a-wifi", desc: "Kabely kategorie 6 do všech místností, změřené a popsané." },
+      { label: "Wi-Fi pro dům i firmu", href: "/sluzby/datove-site-a-wifi", desc: "Přístupové body na stropě, signál bez hluchých míst." },
+      { label: "PoE pro kamery", href: "/sluzby/datove-site-a-wifi", desc: "Switch napájí kamery i přístupové body po datovém kabelu." },
+      { label: "Datové rozvaděče", href: "/sluzby/datove-site-a-wifi", desc: "Patch panel, switch a router přehledně na jednom místě." },
+      { label: "Sítě pro kamerové systémy", href: "/sluzby/kamerove-systemy", desc: "Síť dimenzovaná na záznam a vzdálený přístup." },
+    ],
+  },
+];
+---
+
+<section class="sidx" aria-labelledby="sidx-title" data-sidx>
+  <div class="wrap">
+    <div class="grid12">
+      <h2 id="sidx-title" class="sidx__h t-h2 rv">Všechno, co zapojíme</h2>
+    </div>
+    <div class="grid12 sidx__cols">
+      {groups.map((g, gi) => (
+        <div class="sidx__group rv" style={`--i:${gi}`}>
+          <h3 class="sidx__gname">{g.name}</h3>
+          <ul>
+            {g.items.map((it) => (
+              <li><a href={link(it.href)} data-desc={cz(it.desc)}>{cz(it.label)}</a></li>
+            ))}
+          </ul>
+          <p class="sidx__summary">{cz(g.summary)}</p>
+        </div>
+      ))}
+      <p class="sidx__desc" aria-hidden="true" data-sidx-desc>{cz("Najeďte na službu a uvidíte, co obnáší. Kliknutím otevřete její stránku.")}</p>
+    </div>
+    <p class="sidx__all rv"><a href={link("/sluzby")} class="link-u">Přehled všech služeb</a></p>
+  </div>
+</section>
+
+<style>
+  .sidx { padding-block: var(--section); }
+  .sidx__h { grid-column: 1 / span 6; margin-bottom: clamp(48px, 7vw, 96px); }
+  .sidx__cols { align-items: start; }
+  .sidx__group { grid-column: span 3; }
+  .sidx__group:nth-child(1) { grid-column: 1 / span 3; }
+  .sidx__group:nth-child(2) { grid-column: 4 / span 3; }
+  .sidx__group:nth-child(3) { grid-column: 7 / span 3; }
+  .sidx__gname { font-size: var(--fs-body); font-weight: 700; letter-spacing: 0; margin-bottom: 1.25em; color: var(--color-hey); }
+  .sidx ul { list-style: none; margin: 0; padding: 0; }
+  .sidx li a {
+    display: block; padding: 5px 0; font-size: var(--fs-body); line-height: 1.3; color: var(--color-muted); text-decoration: none;
+    transition: color 160ms var(--ease-out), transform 200ms var(--ease-out);
+  }
+  .sidx li a:focus-visible, .sidx li a.is-on { color: var(--color-ink); transform: translateX(6px); }
+  .sidx__summary { display: none; }
+  .sidx__desc { grid-column: 10 / span 3; grid-row: 1; font-size: var(--fs-body); line-height: 1.45; color: var(--color-ink); min-height: 4.5em; transition: opacity 200ms var(--ease-out); }
+  .sidx__all { margin-top: 56px; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sidx li a:hover { color: var(--color-ink); transform: translateX(6px); }
+  }
+  @media (max-width: 1023px) {
+    .sidx__h { grid-column: 1 / -1; }
+    .sidx__group:nth-child(n) { grid-column: 1 / -1; margin-bottom: 40px; }
+    .sidx__desc { display: none; }
+    .sidx li a { padding: 7px 0; color: var(--color-ink); }
+    .sidx__summary { display: block; margin-top: 12px; color: var(--color-muted); }
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .sidx__group:nth-child(1) { grid-column: 1 / span 6; }
+    .sidx__group:nth-child(2) { grid-column: 7 / span 6; }
+    .sidx__group:nth-child(3) { grid-column: 1 / span 6; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-sidx]").forEach((root) => {
+    const out = root.querySelector<HTMLElement>("[data-sidx-desc]");
+    if (!out) return;
+    const initial = out.textContent;
+    const links = root.querySelectorAll<HTMLAnchorElement>("a[data-desc]");
+    const show = (a: HTMLAnchorElement | null) => {
+      links.forEach((l) => l.classList.toggle("is-on", l === a));
+      out.textContent = a ? a.dataset.desc || "" : initial;
+    };
+    links.forEach((a) => {
+      a.addEventListener("pointerenter", () => show(a));
+      a.addEventListener("focus", () => show(a));
+    });
+    root.addEventListener("pointerleave", () => show(null));
+  });
+</script>

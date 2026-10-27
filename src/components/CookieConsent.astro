@@ -1,0 +1,64 @@
+---
+import { link } from "../lib/url";
+// Lišta souhlasu s cookies (opt-in, § 89 odst. 3 zák. 127/2005 Sb.). „Odmítnout vše“ je stejně výrazné jako „Přijmout vše“.
+// Volby se propisují do Google Consent Mode v2 (viz Base.astro) a do dataLayer jako událost consent_update.
+// PUBLIC_AUDIT_NO_BANNER=1 lištu vynechá. Slouží jen pro automatické audity layoutu, nikdy pro produkci.
+const off = import.meta.env.PUBLIC_AUDIT_NO_BANNER === "1";
+---
+
+{!off && (
+
+<section class="cc" data-consent role="dialog" aria-modal="false" aria-labelledby="cc-title" hidden>
+  <div class="cc__box">
+    <h2 id="cc-title" class="cc__title">Cookies na tomto webu</h2>
+    <p class="cc__text">
+      Analytické a marketingové cookies použijeme jen s vaším souhlasem: ukážou nám, které stránky lidé čtou, a umožní měřit reklamy. <a href={link("/cookies")} class="link-u">Zásady cookies</a>
+    </p>
+
+    <form class="cc__prefs" data-consent-prefs hidden>
+      <label class="cc__opt">
+        <input type="checkbox" checked disabled />
+        <span><strong>Nezbytné</strong> Zapamatují si vaši volbu a zajistí fungování formuláře. Vždy zapnuté.</span>
+      </label>
+      <label class="cc__opt">
+        <input type="checkbox" name="analytics" />
+        <span><strong>Analytické</strong> Google Analytics: návštěvnost a chování na webu, anonymně.</span>
+      </label>
+      <label class="cc__opt">
+        <input type="checkbox" name="marketing" />
+        <span><strong>Marketingové</strong> Google Ads, Seznam Sklik a Meta: měření reklam a remarketing.</span>
+      </label>
+    </form>
+
+    <div class="cc__actions">
+      <button type="button" class="btn btn-paper" data-consent-accept>Přijmout vše</button>
+      <button type="button" class="btn btn-paper" data-consent-reject>Odmítnout vše</button>
+      <button type="button" class="cc__more link-u" data-consent-more>Nastavení</button>
+      <button type="button" class="btn btn-hey" data-consent-save hidden>Uložit výběr</button>
+    </div>
+  </div>
+</section>
+)}
+
+<style>
+  .cc { position: fixed; z-index: 60; left: 0; right: 0; bottom: 0; padding: 0 var(--gutter) calc(var(--gutter) + env(safe-area-inset-bottom, 0px)); pointer-events: none; }
+  .cc[hidden] { display: none; }
+  .cc__box {
+    pointer-events: auto; max-width: 540px; margin-left: auto; padding: 20px 20px 16px;
+    background: var(--color-night-3); box-shadow: 0 24px 60px rgb(0 0 0 / 0.5); /* taste-skill-ignore: dialog, skutečná plovoucí vrstva */
+    animation: cc-in 360ms var(--ease-out);
+  }
+  @keyframes cc-in { from { opacity: 0; transform: translateY(16px); } }
+  .cc__title { font-size: var(--fs-body); letter-spacing: -0.01em; margin-bottom: 6px; }
+  .cc__text { font-size: var(--fs-small); line-height: 1.5; }
+  .cc__prefs { display: grid; gap: 12px; margin-top: 16px; }
+  .cc__prefs[hidden] { display: none; }
+  .cc__opt { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; font-size: var(--fs-small); line-height: 1.45; cursor: pointer; }
+  .cc__opt input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--color-hey); }
+  .cc__opt strong { display: block; }
+  .cc__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; }
+  .cc__actions .btn { min-height: 44px; padding: 0 14px; font-size: var(--fs-small); flex: 1 1 0; }
+  @media (max-width: 560px) { .cc { padding: 0; } .cc__box { padding: 16px var(--gutter) calc(12px + env(safe-area-inset-bottom, 0px)); } .cc__more { padding: 10px 2px; font-size: var(--fs-small); } }
+  .cc__actions [hidden] { display: none; }
+  .cc__more { background: none; border: 0; color: var(--color-ink); cursor: pointer; padding: 12px 6px; font-weight: 500; }
+</style>

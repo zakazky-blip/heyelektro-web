@@ -1,0 +1,131 @@
+---
+import { link } from "../lib/url";
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import MobileBar from "../components/MobileBar.astro";
+import CookieConsent from "../components/CookieConsent.astro";
+import { site } from "../data/site";
+import { organizationSchema } from "../lib/schema";
+import poppins400 from "@fontsource/poppins/files/poppins-latin-400-normal.woff2?url";
+import poppins700 from "@fontsource/poppins/files/poppins-latin-700-normal.woff2?url";
+import poppinsExt700 from "@fontsource/poppins/files/poppins-latin-ext-700-normal.woff2?url";
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  noindex?: boolean;
+  schema?: Record<string, unknown>[];
+  home?: boolean;
+}
+
+const { title, description, ogImage = "/og/og-default.jpg", noindex: pageNoindex = false, schema = [], home = false } = Astro.props;
+// Kanonická adresa vychází z nastavení site + base (vlastní doména i GitHub Pages).
+const origin = (Astro.site ?? new URL(site.url)).origin;
+const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "") || "/";
+const isRoot = path === "/" || path === import.meta.env.BASE_URL || path + "/" === import.meta.env.BASE_URL;
+const canonical = origin + (isRoot ? link("/") : path.replace(/\/$/, ""));
+const og = origin + link(ogImage);
+// PUBLIC_NOINDEX=1 schová celý web před vyhledávači (náhled na GitHub Pages bez vlastní domény).
+const noindex = pageNoindex || import.meta.env.PUBLIC_NOINDEX === "1";
+const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
+const jsonLd = [organizationSchema(), ...schema];
+---
+
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="cs_CZ" />
+    <meta property="og:site_name" content={site.brand} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#10161D" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href={link("/favicon.ico")} sizes="32x32" />
+    <link rel="icon" href={link("/brand/icon.svg")} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={link("/apple-touch-icon.png")} />
+    <link rel="manifest" href={link("/site.webmanifest")} />
+
+    <link rel="preload" href={poppins400} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={poppins700} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={poppinsExt700} as="font" type="font/woff2" crossorigin />
+
+    <!-- Consent Mode v2: výchozí stav „odmítnuto“ ještě před načtením jakéhokoli měření. -->
+    <script is:inline>
+      document.documentElement.classList.add("js");
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag("consent", "default", {
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied",
+        analytics_storage: "denied",
+        functionality_storage: "granted",
+        security_storage: "granted",
+        wait_for_update: 500,
+      });
+      gtag("set", "ads_data_redaction", true);
+      gtag("set", "url_passthrough", true);
+      try {
+        var c = JSON.parse(localStorage.getItem("hey-consent") || "null");
+        if (c && c.v === 1) {
+          gtag("consent", "update", {
+            analytics_storage: c.analytics ? "granted" : "denied",
+            ad_storage: c.marketing ? "granted" : "denied",
+            ad_user_data: c.marketing ? "granted" : "denied",
+            ad_personalization: c.marketing ? "granted" : "denied",
+          });
+        }
+      } catch (e) {}
+    </script>
+    {
+      gtmId && (
+        <script is:inline define:vars={{ gtmId }}>
+          (function (w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+            var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != "dataLayer" ? "&l=" + l : "";
+            j.async = true;
+            j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+            f.parentNode.insertBefore(j, f);
+          })(window, document, "script", "dataLayer", gtmId);
+        </script>
+      )
+    }
+
+    {jsonLd.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}
+    <slot name="head" />
+  </head>
+  <body class:list={[{ "is-home": home }]}>
+    {gtmId && (
+      <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`} height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>
+    )}
+    <a class="skip-link" href="#obsah">Přeskočit na obsah</a>
+    <Header home={home} />
+    <main id="obsah">
+      <slot />
+    </main>
+    <Footer />
+    <MobileBar />
+    <CookieConsent />
+    <script>
+      import "../scripts/site";
+    </script>
+  </body>
+</html>

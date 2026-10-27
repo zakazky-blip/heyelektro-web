@@ -1,0 +1,175 @@
+---
+import { link } from "../../lib/url";
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import CzMap from "../../components/CzMap.astro";
+import Faq from "../../components/Faq.astro";
+import FormSection from "../../components/FormSection.astro";
+import PhoneCta from "../../components/PhoneCta.astro";
+import { locations, cities, locationBySlug, travelFaq, fmtMinutes, type Location } from "../../data/locations";
+import { services, serviceBySlug } from "../../data/services";
+import { breadcrumbSchema, faqSchema, locationSchema } from "../../lib/schema";
+import ServiceCards from "../../components/ServiceCards.astro";
+import { Image } from "astro:assets";
+import { photos } from "../../data/images";
+import { cz } from "../../lib/typo";
+
+export function getStaticPaths() {
+  return locations.map((l) => ({ params: { slug: l.slug }, props: { loc: l } }));
+}
+
+const { loc: l } = Astro.props as { loc: Location };
+const crumbs = [
+  { name: "Úvod", path: "/" },
+  { name: "Kde působíme", path: "/lokality" },
+  { name: l.name, path: `/lokality/${l.slug}` },
+];
+const isCity = l.kind === "city";
+const regionCities = !isCity
+  ? cities.filter((c) => (l.slug === "olomoucky-kraj" ? c.region === "Olomoucký kraj" : c.region === "Pardubický kraj" || c.region === "Královéhradecký kraj"))
+  : [];
+const faq = [
+  ...(isCity ? [travelFaq(l)] : []),
+  ...l.faq,
+  {
+    q: `Které služby ${l.locative} děláte?`,
+    a: "Hlavně kamerové systémy Dahua a Hikvision, zabezpečení Jablotron a rozvaděče. Dále elektroinstalace, revize a hromosvody, wallboxy, datové sítě a videotelefony.",
+  },
+  {
+    q: "Kolik bude montáž stát?",
+    a: "Cena záleží na rozsahu. Po obhlídce vám pošleme nabídku s rozpisem materiálu, práce i dopravy, takže víte předem, kolik zaplatíte.",
+  },
+];
+const neighbors = l.neighbors.map((n) => locationBySlug(n)!).filter(Boolean);
+const emphasis = l.emphasis.map((e) => ({ ...e, s: serviceBySlug(e.service)! }));
+const others = services.filter((s) => !l.emphasis.some((e) => e.service === s.slug));
+const mapCity = isCity && l.km > 0 ? l.name : undefined;
+---
+
+<Base title={l.seoTitle} description={l.description} schema={[locationSchema(l), breadcrumbSchema(crumbs), faqSchema(faq)]}>
+  <PageHero crumbs={crumbs} title={l.h1} lead={l.lead} ctaHref="#poptavka">
+    <Fragment slot="aside">
+      <div class="lmap">
+        <CzMap selected={mapCity} label={`Mapa: ${l.name} a sídlo v Zábřehu`} id={`map-${l.slug}`} />
+        {isCity && (
+          <p class="lmap__fact">
+            {l.km === 0 ? (
+              <Fragment><span class="lmap__big">Sídlo</span><span>{cz("Křížkovského 865/4, Zábřeh")}</span></Fragment>
+            ) : (
+              <Fragment><span class="lmap__big">{l.km}&nbsp;km</span><span>{cz(`ze Zábřehu, autem zhruba ${fmtMinutes(l.minutes)}`)}</span></Fragment>
+            )}
+          </p>
+        )}
+      </div>
+    </Fragment>
+  </PageHero>
+
+  <section class="lint" aria-labelledby="lint-title">
+    <div class="wrap lint__grid">
+      <div class="lint__text">
+        <h2 id="lint-title" class="t-h2 rv">Co u vás děláme nejčastěji</h2>
+        <div class="prose lint__prose rv" style="--i:1">
+          {l.intro.map((p) => <p>{cz(p)}</p>)}
+        </div>
+      </div>
+      <div class="lint__img rv" style="--i:1"><Image src={photos.dumNoc.src} alt={photos.dumNoc.alt} widths={[480, 800, 1100]} sizes="(max-width: 1023px) 100vw, 45vw" loading="lazy" /></div>
+    </div>
+    <div class="wrap lint__cards">
+      <ServiceCards items={emphasis.map((e) => ({ slug: e.s.slug, title: `${e.s.name} ${l.locative}`, text: e.text }))} />
+    </div>
+  </section>
+
+  {!isCity && (
+    <section class="lcities" aria-labelledby="lcities-title">
+      <div class="wrap">
+        <h2 id="lcities-title" class="t-h2 rv">Města, kam jezdíme</h2>
+        <ul class="lcities__list">
+          {regionCities.map((c, i) => (
+            <li class="rv" style={`--i:${i % 4}`}>
+              <a href={link(`/lokality/${c.slug}`)}>
+                <span class="lcities__name">{c.name}</span>
+                <span class="lcities__km">{c.km === 0 ? "sídlo" : `${c.km} km · ${fmtMinutes(c.minutes)}`}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <section class="lall" aria-labelledby="lall-title">
+    <div class="wrap lall__grid">
+      <div>
+        <h2 id="lall-title" class="t-h2 rv">Další služby</h2>
+        <ul class="lall__list rv" style="--i:1">
+          {others.map((s) => (
+            <li><a href={link(`/sluzby/${s.slug}`)}><span>{s.name}</span><span class="lall__short">{cz(s.short)}</span></a></li>
+          ))}
+        </ul>
+      </div>
+      <div class="lall__near rv" style="--i:2">
+        <h2 class="lall__h3">{cz(isCity ? `Jezdíme i do okolí: ${l.name} a okolní obce` : `Obce a města ${l.locative}`)}</h2>
+        <p class="lall__towns">{cz(l.nearby.join(", "))}.</p>
+        {neighbors.length > 0 && (
+          <Fragment>
+            <h2 class="lall__h3">Sousední lokality</h2>
+            <ul class="lall__nb">
+              {neighbors.map((n) => <li><a href={link(`/lokality/${n.slug}`)} class="link-u">{n.name}</a></li>)}
+            </ul>
+          </Fragment>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <Faq faq={faq} title="Časté dotazy" id="faq-lokalita" />
+  <FormSection location={isCity ? l.name : ""} text={cz(`Napište, co potřebujete ${l.locative} zabezpečit nebo zapojit. Ozveme se vám, domluvíme obhlídku a pošleme nabídku.`)} />
+  <PhoneCta />
+</Base>
+
+<style>
+  .lmap { display: grid; gap: 16px; }
+  .lmap__fact { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+  .lmap__big { font-size: var(--fs-display); font-weight: 700; letter-spacing: -0.05em; line-height: 1; color: var(--color-hey); font-variant-numeric: tabular-nums; }
+
+  .lint { padding-block: var(--section); background: var(--color-night-2); }
+  .lint__grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: clamp(32px, 5vw, 96px); align-items: start; }
+  .lint__prose { margin-top: 28px; }
+  .lint__img { aspect-ratio: 4 / 3; overflow: hidden; background: var(--color-night-3); }
+  .lint__img :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .lint__cards { margin-top: clamp(40px, 5vw, 72px); }
+  .lint__emph a { display: grid; gap: 8px; padding: clamp(20px, 2.4vw, 30px); background: var(--color-night-3); text-decoration: none; transition: background-color 160ms var(--ease-out), transform 160ms var(--ease-out); }
+  .lint__emph a:active { transform: scale(0.99); }
+  .lint__name { font-size: var(--fs-lead); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+  .lint__desc { color: var(--color-muted); }
+
+  .lcities { padding-block: var(--section); }
+  .lcities__list { list-style: none; margin: clamp(32px, 4vw, 48px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .lcities__list a { display: grid; gap: 6px; padding: 22px; background: var(--color-night-2); text-decoration: none; transition: background-color 160ms var(--ease-out); }
+  .lcities__name { font-size: var(--fs-lead); font-weight: 700; letter-spacing: -0.03em; }
+  .lcities__km { color: var(--color-muted); font-variant-numeric: tabular-nums; }
+
+  .lall { padding-block: var(--section); }
+  .lall__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(32px, 5vw, 96px); align-items: start; }
+  .lall__list { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 4px; }
+  .lall__list a { display: grid; grid-template-columns: minmax(0, 14rem) 1fr; gap: 4px 24px; padding: 14px 0; text-decoration: none; }
+  .lall__list a > span:first-child { font-weight: 700; }
+  .lall__short { color: var(--color-muted); }
+  .lall__h3 { font-size: var(--fs-body); letter-spacing: -0.01em; margin-top: 8px; }
+  .lall__h3 + * { margin-top: 12px; }
+  .lall__towns { color: var(--color-muted); margin-bottom: 36px; max-width: 60ch; }
+  .lall__nb { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; font-weight: 500; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .lint__emph a:hover, .lcities__list a:hover { background: #2c3846; }
+    .lall__list a:hover > span:first-child { color: var(--color-hey); }
+  }
+  @media (max-width: 1023px) {
+    .lint__grid, .lall__grid { grid-template-columns: 1fr; }
+    .lcities__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 600px) {
+    .lcities__list { grid-template-columns: 1fr; }
+    .lall__list a { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,140 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import FormSection from "../components/FormSection.astro";
+import PhoneCta from "../components/PhoneCta.astro";
+import { photos } from "../data/images";
+import { site } from "../data/site";
+import { breadcrumbSchema } from "../lib/schema";
+import ServiceCards from "../components/ServiceCards.astro";
+import { cz } from "../lib/typo";
+import { inlineSvg } from "../lib/svg";
+import lettering from "../assets/brand/logo-lettering.svg?raw";
+
+const crumbs = [
+  { name: "Úvod", path: "/" },
+  { name: "O nás", path: "/o-nas" },
+];
+const principles = [
+  { t: "Návrh po obhlídce", d: "Kamery, alarm ani rozvaděč nenavrhujeme od stolu. Přijedeme, projdeme objekt a zeptáme se, co potřebujete." },
+  { t: "Nabídka s rozpisem", d: "Materiál, práce i doprava zvlášť. Víte, za co platíte, a nic vás nepřekvapí." },
+  { t: "Čistá montáž", d: "Bezdrátové prvky, kabely vedené půdou a podhledem, nový rozvaděč na místě starého. Sekáme jen tam, kde to jinak nejde." },
+  { t: "Předání a dokumentace", d: "Nastavená aplikace, zaškolení, popis obvodů, schéma a u elektro prací revizní zpráva." },
+  { t: "Rozšíření a servis", d: "Systémy, které jsme montovali, známe. Když budete chtít přidat kameru nebo detektor, zavoláte nám." },
+];
+---
+
+<Base
+  title="O nás: certifikovaní technici ze Zábřehu | Hey! Elektro"
+  description="HEY elektro s.r.o. ze Zábřehu: kamerové systémy, zabezpečení Jablotron a rozvaděče. Certifikovaný partner Jablotron, Dahua a Hikvision. Jak pracujeme a firemní údaje."
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHero
+    crumbs={crumbs}
+    title="O firmě Hey! Elektro"
+    lead="HEY elektro s.r.o. je firma ze Zábřehu. Specializujeme se na kamerové systémy, zabezpečení Jablotron a rozvaděče a jsme certifikovaný partner Jablotron, Dahua a Hikvision."
+    photo={photos.elektrikar}
+  />
+
+  <section class="name" aria-labelledby="name-title">
+    <div class="wrap name__grid">
+      <div class="name__mark rv" aria-hidden="true">
+        <Fragment set:html={inlineSvg(lettering, "onas-l", "name__svg")} />
+      </div>
+      <div class="name__text">
+        <h2 id="name-title" class="t-h2 rv">Proč zrovna Hey!</h2>
+        <div class="prose name__prose rv" style="--i:1">
+          <p>{cz("Hey! zavolá alarm, když se u domu někdo pohybuje. A totéž řeknete, když potřebujete někoho, kdo rozumí kamerám, zabezpečení i elektřině.")}</p>
+          <p>{cz("Písmeno H v logu tvoří dva blesky. Jeden patří silnoproudu, druhý slaboproudu: rozvaděčům a elektroinstalacím na jedné straně, kamerám, alarmům a sítím na druhé. Obojí umíme a obojí navrhujeme dohromady.")}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="princ" aria-labelledby="princ-title">
+    <div class="wrap princ__grid">
+      <h2 id="princ-title" class="t-h2 princ__h rv">Jak pracujeme</h2>
+      <ul class="princ__list">
+        {principles.map((p, i) => (
+          <li class="rv" style={`--i:${i % 3}`}>
+            <h3>{cz(p.t)}</h3>
+            <p>{cz(p.d)}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+
+  <section class="focuscards" aria-labelledby="focuscards-title">
+    <div class="wrap">
+      <h2 id="focuscards-title" class="t-h2 rv">Na co se specializujeme</h2>
+      <div class="focuscards__grid"><ServiceCards items={[{ slug: "kamerove-systemy" }, { slug: "zabezpeceni-jablotron" }, { slug: "rozvadece" }, { slug: "elektroinstalace" }]} cols={4} /></div>
+    </div>
+  </section>
+
+  <section class="cert" aria-labelledby="cert-title">
+    <div class="wrap cert__grid">
+      <h2 id="cert-title" class="t-h2 rv">Certifikace</h2>
+      <ul class="cert__list">
+        {site.certifications.map((c, i) => <li class="rv" style={`--i:${i}`}>{c}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="firm" aria-labelledby="firm-title">
+    <div class="wrap firm__grid">
+      <h2 id="firm-title" class="t-h2 rv">Firemní údaje</h2>
+      <dl class="firm__dl rv" style="--i:1">
+        <div><dt>Obchodní firma</dt><dd>{site.legalName}</dd></div>
+        <div><dt>Sídlo</dt><dd>{cz(`${site.address.street}, ${site.address.zip} ${site.address.city}`)}</dd></div>
+        <div><dt>IČO</dt><dd>{site.ico}</dd></div>
+        {site.dic && <div><dt>DIČ</dt><dd>{site.dic}</dd></div>}
+        <div><dt>Zápis</dt><dd>{cz(`Obchodní rejstřík, ${site.register}`)}</dd></div>
+        <div><dt>Telefon</dt><dd><a href={site.phone.href} data-track="phone">{site.phone.intl}</a></dd></div>
+        <div><dt>E-mail</dt><dd><a href={`mailto:${site.email}`} data-track="email">{site.email}</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <FormSection />
+  <PhoneCta />
+</Base>
+
+<style>
+  .name { padding-block: var(--section); background: var(--color-night-2); }
+  .name__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 6vw, 112px); align-items: center; }
+  .name__mark :global(.name__svg) { width: 100%; height: auto; }
+  .name__prose { margin-top: 28px; }
+
+  .princ { padding-block: var(--section); }
+  .princ__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(16px, 2vw, 32px); }
+  .princ__h { grid-column: 1 / span 4; }
+  .princ__list { grid-column: 5 / span 8; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(32px, 4vw, 56px) clamp(24px, 3vw, 48px); }
+  .princ__list h3 { font-size: var(--fs-lead); letter-spacing: -0.02em; }
+  .princ__list h3::before { content: ""; display: block; width: 22px; height: 6px; background: var(--color-hey); margin-bottom: 16px; transform: skewX(-20deg); }
+  .princ__list p { margin-top: 10px; max-width: 42ch; }
+
+  .focuscards { padding-block: var(--section); }
+  .focuscards__grid { margin-top: clamp(32px, 4vw, 48px); }
+  .cert { padding-block: var(--section); background: var(--color-hey); color: var(--color-night); }
+  .cert__grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 32px; align-items: start; }
+  .cert__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
+
+  .firm { padding-block: var(--section); }
+  .firm__grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 32px; align-items: start; }
+  .firm__dl { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 32px; }
+  .firm__dl dt { font-size: var(--fs-small); color: var(--color-muted); }
+  .firm__dl dd { margin: 4px 0 0; font-weight: 500; }
+  .firm__dl a { text-decoration: none; }
+
+  @media (max-width: 1023px) {
+    .name__grid, .cert__grid, .firm__grid { grid-template-columns: 1fr; }
+    .name__mark { max-width: 420px; }
+    .princ__h, .princ__list { grid-column: 1 / -1; }
+    .princ__list { margin-top: 36px; }
+  }
+  @media (max-width: 600px) {
+    .princ__list, .firm__dl { grid-template-columns: 1fr; }
+  }
+</style>

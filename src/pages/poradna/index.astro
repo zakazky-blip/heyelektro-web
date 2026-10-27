@@ -1,0 +1,72 @@
+---
+import { link } from "../../lib/url";
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import PhoneCta from "../../components/PhoneCta.astro";
+import { photos, type PhotoKey } from "../../data/images";
+import { breadcrumbSchema } from "../../lib/schema";
+import { cz } from "../../lib/typo";
+
+const posts = (await getCollection("poradna")).sort((a, b) => +b.data.date - +a.data.date);
+const crumbs = [
+  { name: "Úvod", path: "/" },
+  { name: "Poradna", path: "/poradna" },
+];
+const fmt = (d: Date) => d.toLocaleDateString("cs-CZ", { day: "numeric", month: "long", year: "numeric" });
+---
+
+<Base
+  title="Poradna: kamery, alarmy, rozvaděče | Hey! Elektro"
+  description="Praktické rady k kamerovým systémům, alarmům Jablotron, rozvaděčům a GDPR od certifikovaných techniků Hey! Elektro."
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHero crumbs={crumbs} title="Poradna" lead="Co zvážit, než si pořídíte kamery, alarm nebo nový rozvaděč. Píšeme z praxe, bez zbytečného žargonu." actions={false} photo={photos.kleste} />
+
+  <section class="plist" aria-label="Články">
+    <div class="wrap plist__grid">
+      {posts.map((p, i) => {
+        const ph = photos[p.data.image as PhotoKey];
+        return (
+          <article class:list={["plist__item rv", { "plist__item--lead": i === 0 }]} style={`--i:${i % 3}`}>
+            <a href={link(`/poradna/${p.id}`)} class="plist__link">
+              <div class="plist__img">
+                <Image src={ph.src} alt="" widths={[480, 800, 1200]} sizes={i === 0 ? "(max-width: 1023px) 100vw, 60vw" : "(max-width: 1023px) 100vw, 30vw"} loading={i < 2 ? "eager" : "lazy"} />
+              </div>
+              <h2 class="plist__title">{cz(p.data.title)}</h2>
+            </a>
+            <p class="plist__desc">{cz(p.data.perex)}</p>
+            <p class="plist__date">{fmt(p.data.updated ?? p.data.date)}</p>
+          </article>
+        );
+      })}
+    </div>
+  </section>
+  <PhoneCta />
+</Base>
+
+<style>
+  .plist { padding-bottom: var(--section); }
+  .plist__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(40px, 5vw, 72px) clamp(20px, 2.5vw, 40px); }
+  .plist__item--lead { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: clamp(24px, 4vw, 64px); align-items: end; }
+  .plist__item--lead .plist__link { display: contents; }
+  .plist__item--lead .plist__img { grid-row: 1 / span 3; }
+  .plist__link { text-decoration: none; display: grid; gap: 18px; }
+  .plist__img { aspect-ratio: 3 / 2; overflow: hidden; background: var(--color-night-2); }
+  .plist__img :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 1000ms var(--ease-out); }
+  .plist__title { font-size: var(--fs-lead); letter-spacing: -0.025em; line-height: 1.15; }
+  .plist__item--lead .plist__title { font-size: var(--fs-h2); }
+  .plist__desc { margin-top: 12px; color: var(--color-muted); max-width: 52ch; }
+  .plist__date { margin-top: 12px; font-size: var(--fs-small); color: var(--color-muted); }
+  @media (hover: hover) and (pointer: fine) {
+    .plist__link:hover :global(img) { transform: scale(1.03); }
+    .plist__link:hover .plist__title { color: var(--color-hey); }
+  }
+  @media (max-width: 1023px) {
+    .plist__grid { grid-template-columns: 1fr; }
+    .plist__item--lead { grid-template-columns: 1fr; }
+    .plist__item--lead .plist__img { grid-row: auto; }
+    .plist__item--lead .plist__title { margin-top: 18px; }
+  }
+</style>

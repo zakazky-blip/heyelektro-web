@@ -1,0 +1,58 @@
+---
+import { link } from "../lib/url";
+// Karty služeb s fotkou. Používá se pro související služby, zvýrazněné služby lokalit a hub služeb.
+import { Image } from "astro:assets";
+import { serviceBySlug } from "../data/services";
+import { photos, serviceImage } from "../data/images";
+import { cz } from "../lib/typo";
+
+interface Props {
+  items: { slug: string; title?: string; text?: string }[];
+  cols?: 2 | 3 | 4;
+}
+const { items, cols = 3 } = Astro.props;
+const cards = items
+  .map((it) => {
+    const s = serviceBySlug(it.slug);
+    if (!s) return null;
+    return { href: link(`/sluzby/${s.slug}`), title: it.title ?? s.name, text: it.text ?? s.short, photo: photos[serviceImage[s.image]] };
+  })
+  .filter((c): c is NonNullable<typeof c> => c !== null);
+---
+
+<ul class={`scards scards--${cols}`}>
+  {cards.map((c, i) => (
+    <li class="rv" style={`--i:${i % cols}`}>
+      <a href={c.href} class="scards__a">
+        <span class="scards__img">
+          <Image src={c.photo.src} alt="" widths={[360, 560, 800]} sizes={`(max-width: 767px) 100vw, (max-width: 1023px) 50vw, ${Math.round(100 / cols)}vw`} loading="lazy" />
+        </span>
+        <span class="scards__title">{cz(c.title)}</span>
+        <span class="scards__text">{cz(c.text)}</span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .scards { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .scards--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .scards--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .scards--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .scards__a { display: grid; align-content: start; height: 100%; background: var(--color-night-2); text-decoration: none; transition: background-color 160ms var(--ease-out), transform 160ms var(--ease-out); }
+  .scards__a:active { transform: scale(0.99); }
+  .scards__img { display: block; aspect-ratio: 16 / 10; overflow: hidden; }
+  .scards__img :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 900ms var(--ease-out); }
+  .scards__title { padding: 22px 22px 0; font-size: var(--fs-lead); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+  .scards__text { padding: 10px 22px 24px; color: var(--color-muted); }
+  @media (hover: hover) and (pointer: fine) {
+    .scards__a:hover { background: var(--color-night-3); }
+    .scards__a:hover :global(img) { transform: scale(1.04); }
+  }
+  @media (max-width: 1023px) {
+    .scards--3, .scards--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .scards--2, .scards--3, .scards--4 { grid-template-columns: 1fr; }
+  }
+</style>

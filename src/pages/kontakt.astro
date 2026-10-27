@@ -1,0 +1,139 @@
+---
+import { link } from "../lib/url";
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import FormSection from "../components/FormSection.astro";
+import CzMap from "../components/CzMap.astro";
+import { site } from "../data/site";
+import { regions, cities } from "../data/locations";
+import { breadcrumbSchema } from "../lib/schema";
+import { Image } from "astro:assets";
+import ServiceCards from "../components/ServiceCards.astro";
+import { photos } from "../data/images";
+import { cz } from "../lib/typo";
+
+const crumbs = [
+  { name: "Úvod", path: "/" },
+  { name: "Kontakt", path: "/kontakt" },
+];
+const mapy = `https://mapy.com/cs/zakladni?q=${encodeURIComponent(`${site.address.street}, ${site.address.zip} ${site.address.city}`)}`;
+---
+
+<Base
+  title="Kontakt a nezávazná poptávka | Hey! Elektro Zábřeh"
+  description={`Zavolejte na ${site.phone.display}, napište na ${site.email} nebo vyplňte nezávaznou poptávku. HEY elektro s.r.o., Křížkovského 865/4, Zábřeh.`}
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <section class="kh">
+    <div class="wrap">
+      <Breadcrumbs items={crumbs} />
+      <div class="kh__grid">
+        <div>
+          <h1 class="kh__title rv">Kontakt</h1>
+          <p class="kh__lead rv" style="--i:1">{cz("Zavolejte, napište, nebo vyplňte poptávku níže. Ozveme se vám a domluvíme obhlídku.")}</p>
+          <div class="kh__img rv" style="--i:2"><Image src={photos.hero.src} alt={photos.hero.alt} widths={[480, 800]} sizes="(max-width: 1023px) 100vw, 38vw" loading="eager" /></div>
+          <p class="kh__error" hidden data-error>{cz("Poptávku se nepodařilo odeslat. Zkuste to prosím znovu, nebo nám rovnou zavolejte.")}</p>
+        </div>
+        <div class="kh__cards rv" style="--i:2">
+          <a href={site.phone.href} class="kh__phone" data-track="phone">
+            <span class="sr-only">Telefon: </span>
+            <span class="kh__big">{site.phone.display}</span>
+          </a>
+          <a href={`mailto:${site.email}`} class="kh__mail" data-track="email">
+            <span class="sr-only">E-mail: </span>
+            <span class="kh__mid">{site.email}</span>
+          </a>
+          <div class="kh__addr">
+            <span class="kh__label">Sídlo</span>
+            <address set:html={cz(`${site.legalName}<br>${site.address.street}<br>${site.address.zip} ${site.address.city}`)} />
+            <p class="kh__maps">
+              <a href={site.mapsUrl} rel="noopener" target="_blank" class="link-u">Google Mapy</a>
+              <a href={mapy} rel="noopener" target="_blank" class="link-u">Mapy.com</a>
+            </p>
+          </div>
+          {site.hours && (
+            <div class="kh__addr">
+              <span class="kh__label">Pracovní doba</span>
+              <p>{site.hours.days} {site.hours.time}</p>
+            </div>
+          )}
+          <div class="kh__addr">
+            <span class="kh__label">Fakturační údaje</span>
+            <p>{cz(`IČO ${site.ico}`)}{site.dic && <><br />DIČ {site.dic}</>}</p>
+            <p class="t-small muted">{cz(`Zapsáno v obchodním rejstříku: ${site.register}.`)}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <FormSection />
+
+
+  <section class="focuscards" aria-labelledby="focuscards-title">
+    <div class="wrap">
+      <h2 id="focuscards-title" class="t-h2 rv">Na co se specializujeme</h2>
+      <div class="focuscards__grid"><ServiceCards items={[{ slug: "kamerove-systemy" }, { slug: "zabezpeceni-jablotron" }, { slug: "rozvadece" }, { slug: "elektroinstalace" }]} cols={4} /></div>
+    </div>
+  </section>
+
+  <section class="karea" aria-labelledby="karea-title">
+    <div class="wrap karea__grid">
+      <div>
+        <h2 id="karea-title" class="t-h2 rv">Kam jezdíme</h2>
+        <p class="karea__p">{cz("Olomoucký kraj, východní Čechy, Opava a Ostrava. Větší zakázky po celé republice.")}</p>
+        <ul class="karea__list">
+          {regions.map((r) => <li><a href={link(`/lokality/${r.slug}`)} class="link-u">{r.name}</a></li>)}
+          {cities.filter((c) => c.region === "Moravskoslezský kraj").map((c) => <li><a href={link(`/lokality/${c.slug}`)} class="link-u">{c.name}</a></li>)}
+          <li><a href={link("/lokality")} class="link-u">Všechny lokality a vzdálenosti</a></li>
+        </ul>
+      </div>
+      <CzMap label="Mapa působnosti a sídla v Zábřehu" id="map-kontakt" />
+    </div>
+  </section>
+</Base>
+
+<script>
+  if (new URLSearchParams(location.search).get("chyba")) {
+    const el = document.querySelector<HTMLElement>("[data-error]");
+    if (el) el.hidden = false;
+  }
+</script>
+
+<style>
+  .kh { padding: clamp(28px, 4vw, 56px) 0 var(--section); }
+  .kh__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 96px); margin-top: clamp(40px, 6vw, 96px); align-items: start; }
+  .kh__title { font-size: var(--fs-display); letter-spacing: -0.045em; line-height: 0.98; }
+  .kh__lead { margin-top: 24px; font-size: var(--fs-lead); line-height: 1.42; max-width: 32ch; }
+  .kh__img { margin-top: 36px; aspect-ratio: 4 / 3; overflow: hidden; background: var(--color-night-2); }
+  .kh__img :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .kh__error { margin-top: 24px; padding: 14px 16px; background: #3a1d1d; color: #ffd3cd; font-weight: 500; }
+  .kh__cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .kh__cards > * { display: grid; gap: 8px; align-content: start; padding: clamp(20px, 2.4vw, 30px); background: var(--color-night-2); text-decoration: none; }
+  .kh__phone { grid-column: 1 / -1; background: var(--color-hey) !important; color: var(--color-night); transition: transform 140ms var(--ease-out); }
+  .kh__phone:active { transform: scale(0.99); }
+  .kh__label { font-size: var(--fs-small); color: var(--color-muted); }
+  .kh__phone .kh__label { color: var(--color-night); }
+  .kh__big { font-size: var(--fs-display); font-weight: 700; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .kh__mail { grid-column: 1 / -1; }
+  .kh__mid { font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; word-break: break-word; }
+  .kh__addr address { font-style: normal; }
+  .kh__maps { display: flex; gap: 18px; margin-top: 6px; }
+
+  .focuscards { padding-block: var(--section); }
+  .focuscards__grid { margin-top: clamp(32px, 4vw, 48px); }
+  .karea { padding-block: var(--section); }
+  .karea__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 96px); align-items: center; }
+  .karea__p { margin-top: 18px; max-width: 40ch; }
+  .karea__list { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 10px; font-weight: 500; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .kh__mail:hover { background: var(--color-night-3); }
+  }
+  @media (max-width: 1023px) {
+    .kh__grid, .karea__grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .kh__cards { grid-template-columns: 1fr; }
+  }
+</style>

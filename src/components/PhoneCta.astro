@@ -1,0 +1,47 @@
+---
+import { link } from "../lib/url";
+// Závěrečná výzva: celá plocha v Hey žluté, telefonní číslo jako obří písmo.
+import { site } from "../data/site";
+import { cz } from "../lib/typo";
+
+interface Props { title?: string }
+const { title = "Chcete to probrat rovnou? Zavolejte, poradíme po telefonu." } = Astro.props;
+---
+
+<section class="pcta" aria-labelledby="pcta-title" data-hide-mbar>
+  <div class="wrap pcta__inner">
+    <h2 id="pcta-title" class="pcta__title rv">{cz(title)}</h2>
+    <a href={site.phone.href} class="pcta__phone rv" style="--i:1" data-track="phone" data-cta="phone-cta" aria-label={`Zavolat na ${site.phone.intl}`}>{site.phone.display}</a>
+    <div class="pcta__foot">
+      <p>
+        <a href={`mailto:${site.email}`} class="link-u" data-track="email">{site.email}</a><br />
+        {cz(`${site.address.street}, ${site.address.zip} ${site.address.city}`)}
+      </p>
+      <p class="pcta__right"><a href={link("/kontakt#poptavka")} class="link-u" data-track="cta" data-cta="phone-cta-form">Raději napsat poptávku</a></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pcta { background: var(--color-hey); color: var(--color-night); }
+  .pcta__inner { min-height: min(86svh, 820px); display: grid; grid-template-rows: auto 1fr auto; padding-block: clamp(40px, 6vw, 72px); }
+  .pcta__title { font-size: var(--fs-lead); font-weight: 500; letter-spacing: -0.01em; line-height: 1.35; max-width: 26ch; }
+  .pcta__phone {
+    align-self: end; justify-self: start;
+    font-size: clamp(3.4rem, 0.5rem + 15vw, 15rem); font-weight: 700; letter-spacing: -0.06em; line-height: 0.9;
+    text-decoration: none; white-space: nowrap; font-variant-numeric: tabular-nums; margin: 0 0 clamp(24px, 4vw, 56px) -0.04em;
+    transition: color 200ms var(--ease-out), transform 200ms var(--ease-out);
+  }
+  .pcta__phone:active { transform: scale(0.99); }
+  .pcta__foot { display: flex; justify-content: space-between; align-items: end; gap: 16px 32px; flex-wrap: wrap; font-size: var(--fs-body); }
+  .pcta__right { text-align: right; }
+  .pcta :focus-visible { outline-color: var(--color-night); }
+  @media (hover: hover) and (pointer: fine) {
+    .pcta__phone:hover { color: #3a2f00; }
+  }
+  @media (max-width: 767px) {
+    .pcta__inner { min-height: 70svh; }
+    .pcta__phone { font-size: 17.5vw; }
+    .pcta__right { text-align: left; }
+  }
+</style>

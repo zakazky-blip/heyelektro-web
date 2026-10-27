@@ -1,0 +1,185 @@
+---
+import { link, stripBase } from "../lib/url";
+import { site } from "../data/site";
+import { focusServices, otherServices } from "../data/services";
+import logo from "../assets/brand/logo-horizontal-dark.svg?raw";
+import { inlineSvg } from "../lib/svg";
+
+interface Props { home?: boolean }
+const { home = false } = Astro.props;
+const path = stripBase(Astro.url.pathname.replace(/\.html$/, "")).replace(/\/$/, "") || "/";
+const is = (p: string) => (p === "/" ? path === "/" : path === p || path.startsWith(p + "/"));
+const links = [
+  { href: "/lokality", label: "Kde působíme" },
+  { href: "/o-nas", label: "O nás" },
+  { href: "/poradna", label: "Poradna" },
+  { href: "/kontakt", label: "Kontakt" },
+];
+const logoSvg = inlineSvg(logo, "hdr");
+---
+
+<header class:list={["hdr", { "hdr--home": home }]} data-header>
+  <div class="hdr__bar wrap">
+    <a href={link("/")} class="hdr__logo" aria-label="Hey! Elektro – úvodní stránka">
+      <Fragment set:html={logoSvg} />
+    </a>
+
+    <nav class="hdr__nav" aria-label="Hlavní navigace">
+      <ul>
+        <li class="hdr__has-menu">
+          <button type="button" class:list={["hdr__link", { "is-current": is("/sluzby") }]} aria-expanded="false" aria-controls="menu-sluzby" data-menu-toggle>
+            Služby
+            <svg width="12" height="8" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"></path></svg>
+          </button>
+          <div class="hdr__menu" id="menu-sluzby" data-menu hidden>
+            <div class="hdr__menu-col">
+              <p class="hdr__menu-title">Specializace</p>
+              {focusServices.map((s) => (
+                <a href={link(`/sluzby/${s.slug}`)} class="hdr__menu-item">
+                  <span class="hdr__menu-name">{s.name}</span>
+                  <span class="hdr__menu-desc">{s.short}</span>
+                </a>
+              ))}
+            </div>
+            <div class="hdr__menu-col">
+              <p class="hdr__menu-title">Další služby</p>
+              {otherServices.map((s) => (
+                <a href={link(`/sluzby/${s.slug}`)} class="hdr__menu-item hdr__menu-item--compact">
+                  <span class="hdr__menu-name">{s.name}</span>
+                </a>
+              ))}
+              <a href={link("/sluzby")} class="hdr__menu-all link-u">Přehled všech služeb</a>
+            </div>
+          </div>
+        </li>
+        {links.map((l) => (
+          <li><a href={link(l.href)} class:list={["hdr__link", { "is-current": is(l.href) }]} aria-current={is(l.href) ? "page" : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="hdr__actions">
+      <a href={site.phone.href} class="hdr__phone" data-track="phone">{site.phone.display}</a>
+      <a href={link("/kontakt#poptavka")} class="btn btn-hey hdr__cta" data-track="cta" data-cta="header">Nezávazná poptávka</a>
+      <button type="button" class="hdr__burger" aria-expanded="false" aria-controls="mobile-menu" data-burger>
+        <span class="hdr__burger-label">Menu</span>
+        <span class="hdr__burger-icon" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mnav" id="mobile-menu" data-mobile-menu hidden>
+    <nav class="wrap" aria-label="Mobilní navigace">
+      <p class="mnav__title">Specializace</p>
+      <ul class="mnav__big">
+        {focusServices.map((s) => <li><a href={link(`/sluzby/${s.slug}`)}>{s.name}</a></li>)}
+      </ul>
+      <p class="mnav__title">Další služby</p>
+      <ul class="mnav__small">
+        {otherServices.map((s) => <li><a href={link(`/sluzby/${s.slug}`)}>{s.name}</a></li>)}
+      </ul>
+      <ul class="mnav__small mnav__pages">
+        <li><a href={link("/sluzby")}>Všechny služby</a></li>
+        {links.map((l) => <li><a href={link(l.href)}>{l.label}</a></li>)}
+      </ul>
+      <div class="mnav__contact">
+        <a href={site.phone.href} class="btn btn-hey" data-track="phone">Zavolat {site.phone.display}</a>
+        <a href={`mailto:${site.email}`} class="link-u" data-track="email">{site.email}</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .hdr {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--color-night);
+    padding-top: env(safe-area-inset-top, 0px);
+    transition: background-color 200ms var(--ease-out);
+  }
+  .hdr.is-scrolled { background: var(--color-night-2); }
+  .hdr__bar { display: flex; align-items: center; gap: 28px; height: 76px; }
+  .hdr__logo { display: block; width: 170px; flex: none; margin-left: -8px; }
+  .hdr__logo :global(svg) { width: 100%; height: auto; }
+
+  /* Na úvodní stránce je logem obří nápis v hero, malé logo se ukáže až po odscrollování. */
+  .hdr--home .hdr__logo { opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out); }
+  .hdr--home.is-scrolled .hdr__logo { opacity: 1; pointer-events: auto; transform: none; }
+  .hdr--home:not(.is-scrolled) { background: transparent; }
+
+  .hdr__nav { margin-left: auto; }
+  .hdr__nav > ul { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
+  .hdr__link {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px;
+    font-size: var(--fs-body); font-weight: 500; text-decoration: none; color: var(--color-ink);
+    background: none; border: 0; cursor: pointer; white-space: nowrap;
+  }
+  .hdr__link.is-current { color: var(--color-hey); }
+  .hdr__link svg { transition: transform 200ms var(--ease-out); }
+  .hdr__link[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+  .hdr__has-menu { position: relative; }
+  .hdr__menu {
+    position: absolute; top: calc(100% + 10px); left: -20px; width: min(760px, 70vw);
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 8px;
+    background: var(--color-night-2); padding: 12px;
+    box-shadow: 0 24px 60px rgb(0 0 0 / 0.45); /* taste-skill-ignore: rozbalovací menu */
+    transform-origin: top left;
+    animation: menu-in 200ms var(--ease-out);
+  }
+  .hdr__menu[hidden] { display: none; }
+  @keyframes menu-in { from { opacity: 0; transform: translateY(-6px) scale(0.98); } }
+  .hdr__menu-col { display: flex; flex-direction: column; gap: 2px; padding: 8px; }
+  .hdr__menu-col:first-child { background: var(--color-night-3); }
+  .hdr__menu-title { font-size: var(--fs-small); color: var(--color-muted); padding: 6px 12px 10px; }
+  .hdr__menu-item { display: grid; gap: 2px; padding: 12px; text-decoration: none; transition: background-color 150ms var(--ease-out); }
+  .hdr__menu-name { font-weight: 700; font-size: var(--fs-body); }
+  .hdr__menu-desc { font-size: var(--fs-small); color: var(--color-muted); line-height: 1.45; }
+  .hdr__menu-item--compact { padding: 10px 12px; }
+  .hdr__menu-item--compact .hdr__menu-name { font-weight: 500; }
+  .hdr__menu-all { margin: 10px 12px 4px; font-size: var(--fs-small); }
+
+  .hdr__actions { display: flex; align-items: center; gap: 18px; }
+  .hdr__phone { font-weight: 700; text-decoration: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .hdr__cta { min-height: 46px; padding: 0 20px; white-space: nowrap; }
+
+  .hdr__burger { display: none; align-items: center; gap: 10px; min-height: 44px; padding: 0 4px 0 12px; background: none; border: 0; color: var(--color-ink); cursor: pointer; font-weight: 500; }
+  .hdr__burger-icon { display: grid; gap: 6px; width: 22px; }
+  .hdr__burger-icon i { display: block; height: 2px; background: currentColor; transition: transform 220ms var(--ease-out); }
+  .hdr__burger[aria-expanded="true"] .hdr__burger-icon i:first-child { transform: translateY(4px) rotate(45deg); }
+  .hdr__burger[aria-expanded="true"] .hdr__burger-icon i:last-child { transform: translateY(-4px) rotate(-45deg); }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hdr__link:hover { color: var(--color-hey); }
+    .hdr__menu-item:hover { background: #2c3846; }
+    .hdr__phone:hover { color: var(--color-hey); }
+  }
+
+  .mnav {
+    position: fixed; inset: calc(64px + env(safe-area-inset-top, 0px)) 0 0 0; z-index: 49;
+    background: var(--color-night); overflow-y: auto; overscroll-behavior: contain;
+    padding: 12px 0 calc(110px + env(safe-area-inset-bottom, 0px));
+    animation: mnav-in 260ms var(--ease-out);
+  }
+  .mnav[hidden] { display: none; }
+  @keyframes mnav-in { from { opacity: 0; transform: translateY(-10px); } }
+  .mnav__title { color: var(--color-muted); font-size: var(--fs-small); margin: 22px 0 6px; }
+  .mnav ul { list-style: none; margin: 0; padding: 0; }
+  .mnav__big a { display: block; padding: 8px 0; font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; text-decoration: none; line-height: 1.15; }
+  .mnav__small a { display: block; padding: 11px 0; font-size: var(--fs-body); font-weight: 500; text-decoration: none; }
+  .mnav__pages { margin-top: 18px; padding-top: 10px; }
+  .mnav__contact { display: grid; gap: 18px; margin-top: 28px; justify-items: start; }
+  .mnav a:active { color: var(--color-hey); }
+
+  @media (max-width: 1279px) {
+    .hdr__phone { display: none; }
+  }
+  @media (max-width: 1149px) {
+    .hdr__bar { height: 64px; }
+    .hdr__nav, .hdr__cta { display: none; }
+    .hdr__burger { display: inline-flex; }
+    .hdr__actions { margin-left: auto; }
+    .hdr__logo { width: 136px; }
+    .hdr--home:not(.is-scrolled) { background: var(--color-night); }
+  }
+</style>

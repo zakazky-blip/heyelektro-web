@@ -1,0 +1,40 @@
+---
+// Certifikace jako jedna věta: jména výrobců se postupně rozsvěcují.
+import { cz } from "../../lib/typo";
+---
+
+<section class="proof" aria-labelledby="proof-title" data-proof>
+  <div class="wrap">
+    <h2 id="proof-title" class="proof__h rv">
+      Partner <span class="proof__n is-lit" data-n>Jablotron</span>, <span class="proof__n" data-n>Dahua</span> a&nbsp;<span class="proof__n" data-n>Hikvision</span>
+    </h2>
+    <p class="proof__p rv" style="--i:1">
+      {cz("Jsme certifikovaní: na montáž máme školení přímo od výrobců. Systémy proto nastavíme podle jejich doporučení a víme, jak je později rozšířit nebo propojit.")}
+    </p>
+  </div>
+</section>
+
+<style>
+  .proof { padding-block: var(--section); }
+  .proof__h { font-size: var(--fs-display); line-height: 1; letter-spacing: -0.045em; max-width: 22ch; }
+  .proof__n { transition: color 400ms var(--ease-out); }
+  .proof__n.is-lit { color: var(--color-hey); }
+  .proof__p { margin-top: 36px; margin-left: auto; max-width: 46ch; }
+  @media (min-width: 1024px) {
+    .proof .wrap { display: grid; grid-template-columns: 8fr 4fr; gap: 32px; align-items: end; }
+    .proof__p { margin: 0; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-proof]").forEach((root) => {
+    const names = [...root.querySelectorAll<HTMLElement>("[data-n]")];
+    if (!names.length || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let i = 0, timer = 0;
+    const tick = () => { names.forEach((n, k) => n.classList.toggle("is-lit", k === i)); i = (i + 1) % names.length; };
+    new IntersectionObserver(([e]) => {
+      clearInterval(timer);
+      if (e.isIntersecting) { tick(); timer = window.setInterval(tick, 2000); }
+    }).observe(root);
+  });
+</script>

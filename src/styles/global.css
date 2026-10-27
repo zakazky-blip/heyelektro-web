@@ -1,0 +1,227 @@
+@import "tailwindcss";
+
+/* Poppins: písmo z firemní identity. Self-hosted (GDPR), latin + latin-ext kvůli české diakritice. */
+@import "@fontsource/poppins/latin-400.css";
+@import "@fontsource/poppins/latin-ext-400.css";
+@import "@fontsource/poppins/latin-500.css";
+@import "@fontsource/poppins/latin-ext-500.css";
+@import "@fontsource/poppins/latin-700.css";
+@import "@fontsource/poppins/latin-ext-700.css";
+
+/* Metricky upravený záložní font, aby se při načítání Poppins neposouval layout (CLS). */
+@font-face {
+  font-family: "Poppins Fallback";
+  src: local("Arial");
+  ascent-override: 92.83%;
+  descent-override: 30.94%;
+  line-gap-override: 8.84%;
+  size-adjust: 113.34%;
+}
+
+@theme {
+  --font-sans: "Poppins", "Poppins Fallback", system-ui, sans-serif; /* taste-skill-ignore: písmo z firemní identity */
+
+  /* Barvy z identity: Hey žlutá, Noční tmavá, Bílá */
+  --color-hey: #feca14;
+  --color-hey-press: #e9b800;
+  --color-night: #10161d;
+  --color-night-2: #18202a; /* o krok světlejší plocha */
+  --color-night-3: #222c38; /* otevřený prvek, hover */
+  --color-night-0: #0a0e13; /* patička */
+  --color-ink: #ffffff;
+  --color-muted: #b4bfcc; /* 9,9 : 1 na night */
+  --color-paper: #ffffff; /* Bílá z identity */
+  --color-paper-ink: #10161d;
+  --color-paper-muted: #4a5563;
+  --color-paper-field: #f1f3f5;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+:root {
+  --gutter: clamp(16px, 2.6vw, 36px);
+  --section: clamp(64px, 7vw, 120px); /* padding sekce; mezi sekcemi tedy 2× */
+  --max: 1680px;
+
+  /* Typografická škála: malé, text, perex, h3, h2, display (+ obří čísla zvlášť) */
+  --fs-display: clamp(1.9rem, 1rem + 3.9vw, 4.25rem);
+  --fs-h2: clamp(1.75rem, 1.25rem + 1.7vw, 2.625rem);
+  --fs-h3: clamp(1.35rem, 1.1rem + 0.8vw, 1.875rem);
+  --fs-lead: clamp(1.15rem, 1rem + 0.6vw, 1.5rem);
+  --fs-body: clamp(1rem, 0.97rem + 0.12vw, 1.0625rem);
+  --fs-small: 0.875rem;
+
+  color-scheme: dark;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+  background: var(--color-night);
+}
+
+body {
+  margin: 0;
+  background: var(--color-night);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  font-feature-settings: "kern";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  margin: 0;
+}
+
+p, li, dd, blockquote {
+  text-wrap: pretty;
+  hyphens: auto;
+}
+
+p { margin: 0; }
+
+a { color: inherit; }
+
+img, svg, video { display: block; max-width: 100%; }
+
+input, textarea, select, button { font: inherit; }
+input, textarea, select { font-size: max(16px, 1em); }
+
+button, a, [role="button"], summary, label {
+  touch-action: manipulation;
+}
+button, [role="button"], summary, .btn {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+::selection { background: var(--color-hey); color: var(--color-night); }
+
+:focus-visible {
+  outline: 3px solid var(--color-hey);
+  outline-offset: 3px;
+}
+.on-paper :focus-visible, .fsec :focus-visible { outline-color: var(--color-night); }
+
+/* Plynulý přechod mezi stránkami (nativní View Transitions, bez JS) */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root) { animation: 160ms var(--ease-out) both vt-out; }
+  ::view-transition-new(root) { animation: 240ms var(--ease-out) both vt-in; }
+  @keyframes vt-out { to { opacity: 0; } }
+  @keyframes vt-in { from { opacity: 0; } }
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute; left: var(--gutter); top: -100px; z-index: 100;
+  background: var(--color-hey); color: var(--color-night); padding: 12px 18px; font-weight: 700;
+}
+.skip-link:focus { top: 12px; }
+
+/* ——— Rámec ——— */
+.wrap {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.grid12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(16px, 2vw, 32px);
+}
+
+.section { padding-block: var(--section); }
+
+/* ——— Typografie ——— */
+.t-display { font-size: var(--fs-display); line-height: 0.98; letter-spacing: -0.04em; }
+.t-h2 { font-size: var(--fs-h2); line-height: 1.08; letter-spacing: -0.03em; }
+.t-lead { font-size: var(--fs-lead); line-height: 1.38; letter-spacing: -0.01em; }
+.t-small { font-size: var(--fs-small); line-height: 1.5; }
+.muted { color: var(--color-muted); }
+
+.prose p + p { margin-top: 1em; }
+.prose { max-width: 66ch; }
+
+/* ——— Tlačítka: hranatá, plná, jeden tvar na celém webu ——— */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.6em;
+  min-height: 52px; padding: 0 26px;
+  font-weight: 700; font-size: var(--fs-body); letter-spacing: -0.005em;
+  text-decoration: none; border: 0; cursor: pointer;
+  transition: transform 140ms var(--ease-out), background-color 160ms var(--ease-out), color 160ms var(--ease-out);
+}
+.btn:active { transform: scale(0.97); }
+.btn-hey { background: var(--color-hey); color: var(--color-night); }
+.btn-hey:active { background: var(--color-hey-press); }
+.btn-ghost { background: var(--color-night-3); color: var(--color-ink); }
+.btn-dark { background: var(--color-night); color: var(--color-ink); }
+.btn-paper { background: var(--color-paper); color: var(--color-night); }
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-hey:hover { background: #ffd84d; }
+  .btn-ghost:hover { background: #2c3846; }
+  .btn-dark:hover { background: #1d2733; }
+  .link-u:hover { text-decoration-color: var(--color-hey); }
+}
+
+.link-u {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  transition: text-decoration-color 160ms var(--ease-out);
+}
+
+/* ——— Pohyb: obsah je vidět i bez JS; skrývá se jen když JS běží ——— */
+html.js .rv { opacity: 0; transform: translateY(24px); }
+html.js .rv.in {
+  opacity: 1; transform: none;
+  transition: opacity 700ms var(--ease-out), transform 800ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  html.js .rv { opacity: 1; transform: none; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* ——— Formuláře ——— */
+.field { display: grid; gap: 8px; }
+.field label { font-weight: 500; font-size: var(--fs-body); }
+.field input, .field select, .field textarea {
+  width: 100%; min-height: 54px; padding: 14px 16px;
+  background: var(--color-night-2); color: var(--color-ink);
+  border: 2px solid var(--color-night-3); border-radius: 0;
+  transition: border-color 160ms var(--ease-out), background-color 160ms var(--ease-out);
+}
+.field textarea { min-height: 140px; resize: vertical; line-height: 1.5; }
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--color-hey); background: var(--color-night-3);
+}
+.field input::placeholder, .field textarea::placeholder { color: #7f8b99; }
+.field [aria-invalid="true"] { border-color: #ff7a6b; }
+.field .err { color: #ff9c90; font-size: var(--fs-small); }
+
+.on-paper .field input, .on-paper .field select, .on-paper .field textarea {
+  background: var(--color-paper-field); color: var(--color-night); border-color: var(--color-paper-field);
+}
+.on-paper .field input:focus, .on-paper .field select:focus, .on-paper .field textarea:focus { border-color: var(--color-night); background: #fff; }

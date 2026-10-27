@@ -1,0 +1,43 @@
+---
+import { link } from "../lib/url";
+// Vzor zásad podle čl. 13 GDPR. Před spuštěním nechte zkontrolovat (zejména zpracovatele a doby uložení).
+import LegalPage from "../components/LegalPage.astro";
+import { site } from "../data/site";
+import { cz } from "../lib/typo";
+const t = (s: string) => cz(s);
+---
+
+<LegalPage
+  title="Ochrana osobních údajů"
+  description="Jak HEY elektro s.r.o. zpracovává osobní údaje z poptávkového formuláře, telefonu a e-mailu, komu je předává a jaká máte práva."
+  path="/ochrana-osobnich-udaju"
+  updated="26. 10. 2026"
+  lead="Jaké údaje zpracováváme, když nám pošlete poptávku, zavoláte nebo napíšete, komu je předáváme a jaká máte práva."
+>
+  <h2>Kdo údaje zpracovává</h2>
+  <p set:html={t(`Správcem osobních údajů je ${site.legalName}, IČO ${site.ico}, se sídlem ${site.address.street}, ${site.address.zip} ${site.address.city}, zapsaná v obchodním rejstříku vedeném u Krajského soudu v Ostravě, oddíl C, vložka 105637. S dotazy k ochraně údajů se obracejte na e-mail <a href="mailto:${site.email}">${site.email}</a> nebo telefon ${site.phone.display}.`)} />
+
+  <h2>Jaké údaje zpracováváme a proč</h2>
+  <ul>
+    <li set:html={t("<strong>Poptávka z formuláře, e-mail a telefonát.</strong> Jméno, telefon, e-mail, obec a obsah zprávy. Potřebujeme je, abychom vám mohli odpovědět, připravit nabídku a případně uzavřít a splnit smlouvu. Právní základ: jednání o smlouvě a její plnění (čl. 6 odst. 1 písm. b GDPR).")} />
+    <li set:html={t("<strong>Údaje o původu poptávky.</strong> Stránka, ze které jste poptávku odeslali, a pokud jste přišli z reklamy a souhlasili s marketingovými cookies, také identifikátor prokliku (např. gclid) a parametry kampaně. Slouží k vyhodnocení, které reklamy přivádějí poptávky. Právní základ: váš souhlas (čl. 6 odst. 1 písm. a GDPR).")} />
+    <li set:html={t("<strong>Ochrana formuláře a provoz webu.</strong> Technické údaje v záznamech serveru (IP adresa, čas požadavku). Slouží k zabezpečení webu a ochraně proti spamu. Právní základ: oprávněný zájem (čl. 6 odst. 1 písm. f GDPR).")} />
+    <li set:html={t(`<strong>Analytika a reklama.</strong> Pouze pokud udělíte souhlas v liště cookies. Podrobnosti najdete v <a href="${link("/cookies")}">zásadách cookies</a>.`)} />
+  </ul>
+
+  <h2>Jak dlouho údaje uchováváme</h2>
+  <p>{t("Poptávky, ze kterých nevznikne zakázka, uchováváme nejvýše 12 měsíců od poslední komunikace. Údaje o zakázkách a fakturách uchováváme po dobu, kterou ukládají účetní a daňové předpisy (zpravidla 10 let). Údaje zpracovávané na základě souhlasu uchováváme do jeho odvolání.")}</p>
+
+  <h2>Komu údaje předáváme</h2>
+  <p>{t("Údaje neprodáváme. Předáváme je jen zpracovatelům, kteří pro nás zajišťují provoz:")}</p>
+  <ul>
+    <li>{t("Vercel Inc. (hosting webu), USA, předávání na základě EU-U.S. Data Privacy Framework a standardních smluvních doložek,")}</li>
+    <li>{t("Resend (odesílání e-mailů z formuláře), USA, předávání na základě standardních smluvních doložek,")}</li>
+    <li>{t("poskytovatel e-mailové schránky firmy,")}</li>
+    <li>{t("se souhlasem: Google Ireland Ltd. (Google Analytics, Google Ads), Seznam.cz, a.s. (Sklik), Meta Platforms Ireland Ltd.")}</li>
+  </ul>
+
+  <h2>Vaše práva</h2>
+  <p>{t("Máte právo na přístup ke svým údajům, jejich opravu, výmaz, omezení zpracování a přenositelnost. Proti zpracování na základě oprávněného zájmu můžete vznést námitku. Souhlas můžete kdykoli odvolat, a to i v nastavení cookies v patičce webu.")}</p>
+  <p set:html={t("Pokud se domníváte, že údaje zpracováváme v rozporu s předpisy, můžete podat stížnost u Úřadu pro ochranu osobních údajů, Pplk. Sochora 27, 170 00 Praha 7, <a href=\"https://uoou.gov.cz\" rel=\"noopener\" target=\"_blank\">uoou.gov.cz</a>.")} />
+</LegalPage>

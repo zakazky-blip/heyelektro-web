@@ -1,0 +1,62 @@
+---
+// Mapa krajů ČR (Natural Earth, public domain) s městy. Zvýrazní klíčové kraje, sídlo a vybrané město.
+import map from "../data/cz-map.json";
+import { travelTable } from "../data/locations";
+import { site } from "../data/site";
+
+interface Props {
+  selected?: string; // název města
+  label?: string;
+  showAll?: boolean;
+  id?: string;
+}
+const { selected, label = "Mapa působnosti Hey! Elektro", showAll = true, id = "czmap" } = Astro.props;
+const KEY = ["Olomoucký", "Pardubický", "Královéhradecký", "Moravskoslezský"];
+const proj = (lat: number, lng: number) => [+((lng - map.lng0) * map.cos * map.k).toFixed(1), +((51.1 - lat) * map.k).toFixed(1)];
+const [hx, hy] = proj(site.geo.lat, site.geo.lng);
+const towns = travelTable.filter((t) => t.km > 0).map((t) => ({ ...t, xy: proj(t.lat, t.lng) }));
+const sel = towns.find((t) => t.name === selected);
+// Popisek vybraného města na odvrácené straně od Zábřehu, aby se nepřekrývaly
+const east = sel ? sel.xy[0] >= hx : true;
+---
+
+<figure class="czmap" data-czmap={id} data-home={`${hx},${hy}`}>
+  <svg viewBox={map.viewBox} role="img" aria-label={label}>
+    <g class="czmap__kraje">
+      {map.kraje.map((k) => <path d={k.d} class:list={{ "is-key": KEY.includes(k.key) }}><title>{k.name}</title></path>)}
+    </g>
+    <line class="czmap__route" x1={hx} y1={hy} x2={sel ? sel.xy[0] : hx} y2={sel ? sel.xy[1] : hy} data-route></line>
+    {showAll && (
+      <g class="czmap__towns">
+        {towns.map((t) => (
+          <circle cx={t.xy[0]} cy={t.xy[1]} r="2.6" class:list={{ "is-page": !!t.slug, "is-sel": t.name === selected }} data-town={t.name}><title>{`${t.name}: ${t.km} km`}</title></circle>
+        ))}
+      </g>
+    )}
+    <g class="czmap__label" data-label transform={sel ? `translate(${sel.xy[0]} ${sel.xy[1]})` : "translate(-999 -999)"}>
+      <circle r="5" class="czmap__sel"></circle>
+      <text x={east ? 10 : -10} y="4" text-anchor={east ? "start" : "end"} data-label-text>{sel?.name ?? ""}</text>
+    </g>
+    <g transform={`translate(${hx} ${hy})`} class="czmap__home">
+      <circle r="9" class="czmap__home-halo"></circle>
+      <circle r="5"></circle>
+      <text x={east ? -14 : 14} y="4" text-anchor={east ? "end" : "start"} data-home-text>Zábřeh</text>
+    </g>
+  </svg>
+</figure>
+
+<style>
+  .czmap { margin: 0; }
+  .czmap svg { width: 100%; height: auto; overflow: visible; }
+  .czmap__kraje path { fill: #161d26; stroke: var(--color-night); stroke-width: 1.2; stroke-linejoin: round; transition: fill 300ms var(--ease-out); }
+  .czmap__kraje path.is-key { fill: #2a3542; }
+  .czmap__towns circle { fill: var(--color-muted); }
+  .czmap__towns circle.is-page { fill: var(--color-ink); }
+  .czmap__towns circle.is-sel { fill: var(--color-hey); }
+  .czmap__route { stroke: var(--color-hey); stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 2 5; }
+  .czmap__home circle { fill: var(--color-hey); }
+  .czmap__home .czmap__home-halo { fill: color-mix(in srgb, var(--color-hey) 30%, transparent); }
+  .czmap__home text, .czmap__label text { fill: var(--color-ink); font-size: 11px; font-weight: 700; font-family: var(--font-sans); paint-order: stroke; stroke: var(--color-night); stroke-width: 3px; }
+  .czmap__sel { fill: var(--color-hey); }
+  .czmap__label { transition: transform 500ms var(--ease-out); }
+</style>

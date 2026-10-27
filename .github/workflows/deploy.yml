@@ -1,0 +1,55 @@
+# Automatické nasazení na GitHub Pages při každém nahrání změn do větve main.
+# Adresa a podadresa webu se zjistí samy (configure-pages), funguje to pro jakýkoli účet i název repozitáře.
+# Nastavení v repozitáři: Settings → Secrets and variables → Actions → Variables
+#   PUBLIC_NOINDEX       „1“ = náhled schovaný před Googlem (výchozí), „0“ = ostrý web (po připojení domény)
+#   PUBLIC_WEB3FORMS_KEY klíč z web3forms.com, aby formulář posílal poptávky e-mailem
+#   PUBLIC_GTM_ID        Google Tag Manager (GTM-XXXXXXX), až budete chtít měřit
+name: Nasazení na GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - id: pages
+        uses: actions/configure-pages@v5
+      - run: npm ci
+      - run: npm run build
+        env:
+          DEPLOY_TARGET: github
+          SITE_URL: ${{ steps.pages.outputs.origin }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          PUBLIC_NOINDEX: ${{ vars.PUBLIC_NOINDEX || '1' }}
+          PUBLIC_WEB3FORMS_KEY: ${{ vars.PUBLIC_WEB3FORMS_KEY }}
+          PUBLIC_GTM_ID: ${{ vars.PUBLIC_GTM_ID }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

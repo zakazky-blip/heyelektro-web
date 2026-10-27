@@ -1,0 +1,116 @@
+---
+import { link } from "../lib/url";
+import { site } from "../data/site";
+import { services } from "../data/services";
+import { cities } from "../data/locations";
+import { photos } from "../data/images";
+import { cz } from "../lib/typo";
+import { inlineSvg } from "../lib/svg";
+import lettering from "../assets/brand/logo-lettering.svg?raw";
+import wordmark from "../assets/brand/elektro-wordmark.svg?raw";
+
+const year = new Date().getFullYear();
+const credits = Object.values(photos).filter((p, i, a) => a.findIndex((x) => x.url === p.url) === i);
+---
+
+<footer class="ftr" data-hide-mbar>
+  <div class="wrap">
+    <div class="ftr__top">
+      <a href={link("/")} class="ftr__mark" aria-label="Hey! Elektro – úvodní stránka">
+        <Fragment set:html={inlineSvg(lettering, "ftr-l", "ftr__lettering")} />
+        <Fragment set:html={inlineSvg(wordmark, "ftr-w", "ftr__wordmark")} />
+      </a>
+      <div class="ftr__contact">
+        <a href={site.phone.href} class="ftr__phone" data-track="phone">{site.phone.display}</a>
+        <a href={`mailto:${site.email}`} class="ftr__email link-u" data-track="email">{site.email}</a>
+        <address set:html={cz(`${site.address.street}<br>${site.address.zip} ${site.address.city}`)} />
+      </div>
+    </div>
+
+    <div class="ftr__mid">
+      <div class="ftr__places">
+        <h2 class="ftr__h">Kde působíme</h2>
+        <ul>
+          {cities.map((c) => <li><a href={link(`/lokality/${c.slug}`)}>{c.name}</a></li>)}
+        </ul>
+      </div>
+      <div class="ftr__cols">
+        <div>
+          <h2 class="ftr__h">Služby</h2>
+          <ul>{services.map((s) => <li><a href={link(`/sluzby/${s.slug}`)}>{s.name}</a></li>)}</ul>
+        </div>
+        <div>
+          <h2 class="ftr__h">Firma</h2>
+          <ul>
+            <li><a href={link("/o-nas")}>O nás</a></li>
+            <li><a href={link("/lokality")}>Kde působíme</a></li>
+            <li><a href={link("/poradna")}>Poradna</a></li>
+            <li><a href={link("/kontakt")}>Kontakt</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="ftr__h">Informace</h2>
+          <ul>
+            <li><a href={link("/ochrana-osobnich-udaju")}>Ochrana osobních údajů</a></li>
+            <li><a href={link("/cookies")}>Zásady cookies</a></li>
+            <li><button type="button" class="ftr__btn" data-consent-open>Nastavení cookies</button></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="ftr__legal">
+      <p set:html={cz(`${site.legalName}, ${site.address.street}, ${site.address.zip} ${site.address.city}. IČO ${site.ico}${site.dic ? `, DIČ ${site.dic}` : ""}. Zapsáno v obchodním rejstříku vedeném u ${site.register.replace("Krajský soud", "Krajského soudu")}.`)} />
+      <details class="ftr__credits">
+        <summary>Ilustrační fotografie: Unsplash</summary>
+        <ul>
+          {credits.map((p) => <li><a href={p.url} rel="noopener" target="_blank">{p.author}</a></li>)}
+        </ul>
+      </details>
+      <p class="ftr__copy">© {year} {site.brand} <a href="#obsah" class="ftr__up link-u">Zpět nahoru</a></p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ftr { background: var(--color-night-0); padding: clamp(72px, 9vw, 140px) 0 calc(36px + env(safe-area-inset-bottom, 0px)); }
+  .ftr__top { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: clamp(24px, 4vw, 64px); align-items: end; }
+  .ftr__mark { display: grid; gap: clamp(16px, 2vw, 28px); text-decoration: none; }
+  .ftr__mark :global(.ftr__lettering) { width: 100%; height: auto; }
+  .ftr__mark :global(.ftr__wordmark) { width: 52%; height: auto; color: var(--color-ink); margin-left: 3%; }
+  .ftr__contact { display: grid; gap: 14px; justify-items: start; padding-bottom: 6px; }
+  .ftr__phone { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -0.03em; text-decoration: none; color: var(--color-hey); font-variant-numeric: tabular-nums; line-height: 1; }
+  .ftr__email { font-size: var(--fs-lead); font-weight: 500; }
+  .ftr address { font-style: normal; color: var(--color-muted); }
+
+  .ftr__mid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 4vw, 64px); margin-top: clamp(64px, 8vw, 120px); }
+  .ftr__h { font-size: var(--fs-small); font-weight: 500; color: var(--color-muted); letter-spacing: 0; margin-bottom: 14px; }
+  .ftr ul { list-style: none; margin: 0; padding: 0; }
+  .ftr__places ul { columns: 2; column-gap: 24px; }
+  .ftr__places a { display: inline-block; padding: 3px 0; font-size: var(--fs-h3); font-weight: 700; letter-spacing: -0.03em; color: var(--color-hey); text-decoration: none; line-height: 1.25; }
+  .ftr__cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  .ftr__cols a, .ftr__btn { display: inline-block; padding: 5px 0; font-size: var(--fs-body); text-decoration: none; color: var(--color-ink); }
+  .ftr__btn { background: none; border: 0; cursor: pointer; text-align: left; }
+
+  .ftr__legal { margin-top: clamp(56px, 7vw, 96px); display: grid; gap: 14px; color: var(--color-muted); font-size: var(--fs-small); }
+  .ftr__legal p { max-width: 80ch; }
+  .ftr__credits summary { cursor: pointer; width: fit-content; }
+  .ftr__credits ul { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 10px; }
+  .ftr__credits a { color: var(--color-muted); }
+  .ftr__copy { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .ftr__up { color: var(--color-ink); }
+
+  @media (hover: hover) and (pointer: fine) {
+    .ftr__places a:hover, .ftr__cols a:hover, .ftr__btn:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
+    .ftr__phone:hover { color: #ffd84d; }
+  }
+
+  @media (max-width: 900px) {
+    .ftr__top, .ftr__mid { grid-template-columns: 1fr; }
+    .ftr__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ftr__cols > div:last-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 767px) {
+    .ftr { padding-bottom: calc(108px + env(safe-area-inset-bottom, 0px)); }
+  }
+</style>

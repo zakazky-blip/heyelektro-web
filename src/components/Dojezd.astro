@@ -1,0 +1,166 @@
+---
+import { link } from "../lib/url";
+// „Dojezd“: obří slovo, rozbalovací pruhy krajů s kilometry a živý výběr města nad mapou.
+// Data jsou skutečné vzdálenosti ze Zábřehu (OSRM). Bez JS funguje seznam i odkazy, výběr se jen nepřepíná.
+import CzMap from "./CzMap.astro";
+import { travelTable, locations, fmtMinutes, type Region } from "../data/locations";
+import { cz } from "../lib/typo";
+
+interface Props { initial?: string; headingLevel?: "h2" | "h3" }
+const { initial = "Olomouc" } = Astro.props;
+
+const order: Region[] = ["Olomoucký kraj", "Pardubický kraj", "Královéhradecký kraj", "Moravskoslezský kraj"];
+const byRegion = order.map((r) => ({ region: r, towns: travelTable.filter((t) => t.region === r).sort((a, b) => a.km - b.km) }));
+const options = [...travelTable].sort((a, b) => a.name.localeCompare(b.name, "cs"));
+const pageOf = (slug?: string) => (slug ? locations.find((l) => l.slug === slug) : undefined);
+const data = travelTable.map((t) => {
+  const page = pageOf(t.slug);
+  return { name: t.name, km: t.km, time: t.km === 0 ? "" : fmtMinutes(t.min), href: page ? link(`/lokality/${page.slug}`) : "", pageLabel: page ? cz(`Kamery, alarmy a elektro ${page.locative}`) : "" };
+});
+const init = data.find((d) => d.name === initial)!;
+---
+
+<section class="dj" aria-labelledby="dj-title" data-dojezd>
+  <div class="wrap dj__grid">
+    <div class="dj__left">
+      <h2 id="dj-title" class="dj__word rv">Dojezd</h2>
+      <p class="dj__intro rv" style="--i:1">{cz("Kilometry a čas jízdy ze Zábřehu, kde máme sídlo. Na větší zakázky jezdíme po celé republice.")}</p>
+      <div class="dj__bars">
+        {byRegion.map((g, i) => (
+          <details class="dj__bar rv" style={`--i:${i + 1}`} open={i === 0}>
+            <summary><span>{g.region}</span><span class="dj__plus" aria-hidden="true"></span></summary>
+            <ul>
+              {g.towns.map((t) => (
+                <li>
+                  {t.slug ? <a href={link(`/lokality/${t.slug}`)} class="link-u">{t.name}</a> : <span>{t.name}</span>}
+                  <span class="dj__km">{t.km === 0 ? "sídlo" : `${t.km} km`}</span>
+                </li>
+              ))}
+            </ul>
+          </details>
+        ))}
+      </div>
+    </div>
+
+    <div class="dj__right">
+      <div class="dj__sticky">
+        <CzMap selected={initial} id="dojezd" />
+        <div class="dj__live" data-dj-live>
+          <label for="dj-select" class="dj__label">Kde je váš objekt?</label>
+          <div class="dj__select-wrap">
+            <select id="dj-select" data-dj-select>
+              {options.map((o) => <option value={o.name} selected={o.name === initial}>{o.name}</option>)}
+            </select>
+          </div>
+          <p class="dj__readout" aria-live="polite" data-dj-readout>
+            <span class="dj__big" data-dj-km>{init.km}&nbsp;km</span>
+            <span class="dj__small" data-dj-time>{cz(`ze Zábřehu, autem zhruba ${init.time}`)}</span>
+          </p>
+          <div class="dj__links">
+            <a href={link(`/kontakt?obec=${encodeURIComponent(init.name)}#poptavka`)} class="btn btn-hey" data-dj-cta data-track="cta" data-cta="dojezd">Poptat montáž</a>
+            <a href={init.href || link("/lokality")} class="link-u dj__page" data-dj-page>{init.pageLabel || "Všechny lokality"}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="application/json" data-dj-data set:html={JSON.stringify(data)} />
+</section>
+
+<style>
+  .dj { padding-block: var(--section); }
+  .dj__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(16px, 2vw, 32px); align-items: start; }
+  .dj__left { grid-column: 1 / span 5; container-type: inline-size; }
+  .dj__right { grid-column: 7 / span 6; align-self: stretch; }
+  .dj__sticky { position: sticky; top: 110px; }
+  .dj__word { font-size: 22.5cqw; line-height: 0.8; letter-spacing: -0.05em; text-transform: uppercase; font-weight: 700; margin-left: -0.04em; }
+  .dj__intro { margin-top: 28px; max-width: 42ch; }
+  .dj__bars { margin-top: 32px; display: grid; gap: 6px; }
+  .dj__bar { background: var(--color-night-2); }
+  .dj__bar summary { list-style: none; display: flex; justify-content: space-between; align-items: center; min-height: 56px; padding: 0 18px; font-weight: 500; cursor: pointer; }
+  .dj__bar summary::-webkit-details-marker { display: none; }
+  .dj__plus { position: relative; width: 14px; height: 14px; }
+  .dj__plus::before, .dj__plus::after { content: ""; position: absolute; left: 0; top: 6px; width: 14px; height: 2px; background: currentColor; transition: transform 240ms var(--ease-out); }
+  .dj__plus::after { transform: rotate(90deg); }
+  .dj__bar[open] .dj__plus::after { transform: rotate(0deg); }
+  .dj__bar:not([open]) ul { display: none; }
+  .dj__bar ul { list-style: none; margin: 0; padding: 4px 18px 20px; display: grid; gap: 12px; }
+  .dj__bar li { display: flex; justify-content: space-between; gap: 16px; }
+  .dj__km { font-variant-numeric: tabular-nums; color: var(--color-muted); white-space: nowrap; }
+
+  .dj__live { margin-top: 28px; display: grid; gap: 12px; padding: 24px; background: var(--color-night-2); }
+  .dj__label { font-weight: 500; }
+  .dj__select-wrap { position: relative; }
+  .dj__select-wrap::after { content: ""; position: absolute; right: 18px; top: 50%; width: 10px; height: 10px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+  .dj__live select { width: 100%; min-height: 56px; padding: 0 48px 0 16px; appearance: none; background: var(--color-night-3); color: var(--color-ink); border: 0; border-radius: 0; font-weight: 700; font-size: var(--fs-body); cursor: pointer; }
+  .dj__readout { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-top: 8px; }
+  .dj__big { font-size: var(--fs-display); font-weight: 700; letter-spacing: -0.05em; line-height: 1; color: var(--color-hey); font-variant-numeric: tabular-nums; }
+  .dj__small { font-size: var(--fs-body); }
+  .dj__links { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 10px; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .dj__bar summary:hover { background: var(--color-night-3); }
+  }
+  @media (max-width: 1023px) {
+    .dj__left, .dj__right { grid-column: 1 / -1; }
+    .dj__right { margin-top: 48px; }
+    .dj__sticky { position: static; }
+  }
+  @media (max-width: 560px) {
+    .dj__live { padding: 18px; }
+    .dj__links .btn { width: 100%; }
+  }
+</style>
+
+<script>
+  type T = { name: string; km: number; time: string; href: string; pageLabel: string };
+  document.querySelectorAll<HTMLElement>("[data-dojezd]").forEach((root) => {
+    const data: T[] = JSON.parse(root.querySelector("[data-dj-data]")!.textContent || "[]");
+    const sel = root.querySelector<HTMLSelectElement>("[data-dj-select]")!;
+    const km = root.querySelector<HTMLElement>("[data-dj-km]")!;
+    const time = root.querySelector<HTMLElement>("[data-dj-time]")!;
+    const cta = root.querySelector<HTMLAnchorElement>("[data-dj-cta]")!;
+    const page = root.querySelector<HTMLAnchorElement>("[data-dj-page]")!;
+    const map = root.querySelector<SVGSVGElement>("[data-czmap] svg");
+    const [hx, hy] = (root.querySelector<HTMLElement>("[data-czmap]")?.dataset.home || "0,0").split(",").map(Number);
+    const NB = " ";
+
+    const update = (name: string) => {
+      const t = data.find((d) => d.name === name);
+      if (!t) return;
+      km.textContent = t.km === 0 ? "Sídlo" : `${t.km}${NB}km`;
+      time.textContent = t.km === 0 ? `V${NB}Zábřehu jsme doma.` : `ze Zábřehu, autem zhruba ${t.time}`.replace(/ (\d+) (minut|h|min)/g, ` $1${NB}$2`);
+      const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+      cta.href = `${base}/kontakt?obec=${encodeURIComponent(t.name)}#poptavka`;
+      page.href = t.href || `${base}/lokality`;
+      page.textContent = t.pageLabel || "Všechny lokality";
+      if (!map) return;
+      const dot = map.querySelector<SVGCircleElement>(`[data-town="${CSS.escape(name)}"]`);
+      map.querySelectorAll(".is-sel").forEach((c) => c.classList.remove("is-sel"));
+      const label = map.querySelector<SVGGElement>("[data-label]");
+      const line = map.querySelector<SVGLineElement>("[data-route]");
+      if (dot) {
+        dot.classList.add("is-sel");
+        const x = dot.cx.baseVal.value, y = dot.cy.baseVal.value;
+        label?.setAttribute("transform", `translate(${x} ${y})`);
+        const txt = label?.querySelector("[data-label-text]");
+        const east = x >= hx;
+        if (txt) { txt.textContent = name; txt.setAttribute("x", east ? "10" : "-10"); txt.setAttribute("text-anchor", east ? "start" : "end"); }
+        const home = map.querySelector("[data-home-text]");
+        if (home) { home.setAttribute("x", east ? "-14" : "14"); home.setAttribute("text-anchor", east ? "end" : "start"); }
+        line?.setAttribute("x2", String(x));
+        line?.setAttribute("y2", String(y));
+      } else {
+        label?.setAttribute("transform", "translate(-999 -999)");
+        line?.setAttribute("x2", String(hx));
+        line?.setAttribute("y2", String(hy));
+      }
+      (window as unknown as { dataLayer: unknown[] }).dataLayer?.push({ event: "dojezd_select", town: name });
+    };
+    sel.addEventListener("change", () => update(sel.value));
+    map?.querySelectorAll<SVGCircleElement>("[data-town]").forEach((c) => {
+      c.style.cursor = "pointer";
+      c.addEventListener("click", () => { sel.value = c.dataset.town!; update(sel.value); });
+    });
+  });
+</script>

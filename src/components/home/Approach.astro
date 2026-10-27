@@ -1,0 +1,76 @@
+---
+// „Bez sekání a drážkování“: fakta vlevo v úzkém sloupci, široký odstavec od linie 34 %.
+import { site } from "../../data/site";
+import { cz } from "../../lib/typo";
+
+const facts = [
+  { k: "Sídlo", v: `${site.address.city}, ${site.address.street}` },
+  { k: "Působnost", v: "Olomoucký kraj, východní Čechy, Opava a Ostrava" },
+  { k: "Certifikace", v: "Jablotron, Dahua, Hikvision" },
+];
+const handover = ["Nastavenou aplikaci v telefonu", "Zaškolení na místě", "Popis obvodů a schéma zapojení", "Revizní zprávu u elektro prací", "Kontakt, kam zavolat, když něco potřebujete"];
+const certs = [
+  ["Jablotron", "montážní partner"],
+  ["Dahua", "kamerové systémy"],
+  ["Hikvision", "kamerové systémy"],
+];
+---
+
+<section class="appr" aria-labelledby="appr-title">
+  <div class="wrap">
+    <div class="appr__row">
+      <dl class="appr__facts rv">
+        {facts.map((f) => (
+          <div><dt>{f.k}</dt><dd>{cz(f.v)}</dd></div>
+        ))}
+      </dl>
+      <div class="appr__main">
+        <h2 id="appr-title" class="t-h2 rv">{cz("Odborná práce bez sekání a drážkování")}</h2>
+        <p class="appr__para rv" style="--i:1">
+          {cz("Kamery, alarm i rozvaděč se dají udělat čistě. Bezdrátové prvky Jablotron se jen připevní na zeď, kamery napájíme jedním kabelem vedeným půdou nebo podhledem a nový rozvaděč osadíme na místo starého. Klasické elektroinstalace děláme také, jen sekáme tam, kde to jinak nejde, a po sobě uklidíme.")}
+        </p>
+      </div>
+    </div>
+
+    <div class="appr__row appr__row--record">
+      <p class="appr__word rv">Po montáži</p>
+      <div class="appr__lists">
+        <div class="rv" style="--i:1">
+          <h3 class="appr__lh">Dostanete</h3>
+          <ul>{handover.map((h) => <li>{cz(h)}</li>)}</ul>
+        </div>
+        <div class="rv" style="--i:2">
+          <h3 class="appr__lh">Certifikace</h3>
+          <ul class="appr__certs">{certs.map(([n, d]) => <li><span>{n}</span><span class="muted">{d}</span></li>)}</ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .appr { padding-block: var(--section); background: var(--color-night-2); }
+  .appr__row { display: grid; grid-template-columns: 34% 1fr; align-items: start; }
+  .appr__facts { margin: 0; width: min(100%, 200px); display: grid; gap: 22px; padding-top: 8px; }
+  .appr__facts dt { font-size: var(--fs-small); color: var(--color-muted); }
+  .appr__facts dd { margin: 2px 0 0; font-size: var(--fs-small); font-weight: 500; line-height: 1.45; }
+  .appr__main { max-width: calc(90vw - 34vw); }
+  .appr__para { margin-top: 32px; font-size: var(--fs-lead); line-height: 1.4; letter-spacing: -0.01em; max-width: 52ch; }
+  .appr__row--record { margin-top: clamp(80px, 9vw, 140px); }
+  .appr__word { font-size: var(--fs-small); color: var(--color-muted); padding-top: 4px; }
+  .appr__lists { display: grid; grid-template-columns: repeat(2, minmax(0, 300px)); gap: 64px; }
+  .appr__lh { font-size: var(--fs-body); font-weight: 700; letter-spacing: 0; margin-bottom: 14px; color: var(--color-hey); }
+  .appr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: var(--fs-body); }
+  .appr__certs li { display: flex; justify-content: space-between; gap: 16px; }
+
+  @media (max-width: 900px) {
+    .appr__row { grid-template-columns: 1fr; }
+    .appr__main { order: -1; max-width: none; }
+    
+    .appr__facts { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 40px; gap: 18px 24px; }
+    .appr__facts > div:last-child { grid-column: 1 / -1; }
+    .appr__word { display: none; }
+    .appr__row--record { margin-top: 56px; }
+    .appr__lists { grid-template-columns: 1fr; gap: 40px; }
+  }
+</style>

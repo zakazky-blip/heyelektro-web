@@ -1,0 +1,57 @@
+---
+import { link } from "../lib/url";
+// Děkovná stránka po odeslání poptávky. Konverze se neměří tady (refresh by ji zdvojil), ale v události form_submitted.
+import Base from "../layouts/Base.astro";
+import { site } from "../data/site";
+import { cz } from "../lib/typo";
+import { Image } from "astro:assets";
+import { photos } from "../data/images";
+---
+
+<Base title="Děkujeme za poptávku | Hey! Elektro" description="Poptávku jsme přijali. Ozveme se vám a domluvíme další postup." noindex>
+  <section class="ty">
+    <div class="wrap ty__grid">
+    <div class="ty__inner">
+      <h1 class="ty__title">Děkujeme, poptávku máme</h1>
+      <p class="ty__lead">{cz("Ozveme se vám na telefon, který jste uvedli, a domluvíme obhlídku nebo další postup. Kdyby to spěchalo, zavolejte nám rovnou.")}</p>
+      <p class="ty__id" data-lead-id hidden></p>
+      <div class="ty__actions">
+        <a href={site.phone.href} class="btn btn-hey" data-track="phone">Zavolat {site.phone.display}</a>
+        <a href={link("/")} class="btn btn-ghost">Zpět na úvod</a>
+      </div>
+      <div class="ty__next">
+        <h2>Mezitím si můžete přečíst</h2>
+        <ul>
+          <li><a href={link("/poradna/kamerovy-system-pro-rodinny-dum")} class="link-u">Kamerový systém pro rodinný dům: na co myslet</a></li>
+          <li><a href={link("/poradna/bezdratovy-alarm-jablotron")} class="link-u">Bezdrátový alarm Jablotron: zabezpečení bez sekání</a></li>
+          <li><a href={link("/poradna/kdy-vymenit-rozvadec")} class="link-u">Kdy je čas vyměnit starý rozvaděč</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ty__img"><Image src={photos.dumNoc.src} alt={photos.dumNoc.alt} widths={[480, 800]} sizes="(max-width: 1023px) 100vw, 40vw" loading="eager" /></div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  try {
+    const id = sessionStorage.getItem("hey-lead");
+    const el = document.querySelector<HTMLElement>("[data-lead-id]");
+    if (id && el) { el.textContent = `Číslo poptávky: ${id}`; el.hidden = false; }
+  } catch {}
+</script>
+
+<style>
+  .ty { padding: clamp(64px, 10vw, 160px) 0 var(--section); }
+  .ty__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(32px, 5vw, 80px); align-items: start; }
+  .ty__img { aspect-ratio: 4 / 5; overflow: hidden; background: var(--color-night-2); }
+  .ty__img :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  @media (max-width: 1023px) { .ty__grid { grid-template-columns: 1fr; } .ty__img { aspect-ratio: 16 / 10; } }
+  .ty__title { font-size: var(--fs-display); letter-spacing: -0.045em; line-height: 1; max-width: 20ch; }
+  .ty__lead { margin-top: 28px; font-size: var(--fs-lead); line-height: 1.42; max-width: 44ch; }
+  .ty__id { margin-top: 16px; color: var(--color-muted); }
+  .ty__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+  .ty__next { margin-top: clamp(64px, 8vw, 120px); }
+  .ty__next h2 { font-size: var(--fs-body); letter-spacing: -0.01em; }
+  .ty__next ul { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 12px; }
+</style>

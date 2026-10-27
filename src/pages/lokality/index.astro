@@ -1,0 +1,89 @@
+---
+import { link } from "../../lib/url";
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import Dojezd from "../../components/Dojezd.astro";
+import FormSection from "../../components/FormSection.astro";
+import PhoneCta from "../../components/PhoneCta.astro";
+import { cities, regions, fmtMinutes } from "../../data/locations";
+import { breadcrumbSchema } from "../../lib/schema";
+import CzMap from "../../components/CzMap.astro";
+import ServiceCards from "../../components/ServiceCards.astro";
+import { cz } from "../../lib/typo";
+
+const crumbs = [
+  { name: "Úvod", path: "/" },
+  { name: "Kde působíme", path: "/lokality" },
+];
+const groups = [
+  { title: "Olomoucký kraj", region: regions.find((r) => r.slug === "olomoucky-kraj")!, list: cities.filter((c) => c.region === "Olomoucký kraj") },
+  { title: "Východní Čechy", region: regions.find((r) => r.slug === "vychodni-cechy")!, list: cities.filter((c) => c.region === "Pardubický kraj" || c.region === "Královéhradecký kraj") },
+  { title: "Opava a Ostrava", region: undefined, list: cities.filter((c) => c.region === "Moravskoslezský kraj") },
+];
+---
+
+<Base
+  title="Kde působíme: Olomoucký kraj, východní Čechy, Opava, Ostrava | Hey! Elektro"
+  description="Sídlo v Zábřehu. Kamery, alarmy Jablotron, rozvaděče a elektro v Olomouckém kraji, Pardubickém a Královéhradeckém kraji, v Opavě a Ostravě. Vzdálenosti a časy jízdy."
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <PageHero
+    crumbs={crumbs}
+    title="Kde působíme"
+    lead="Ze Zábřehu to máme do Šumperka 15 km, do Olomouce 49 km, do Svitav 52 km a do Ostravy 145 km. Klíčové jsou pro nás Olomoucký kraj, východní Čechy, Opava a Ostrava. Větší zakázky děláme po celé republice."
+  >
+    <Fragment slot="aside"><CzMap label="Mapa působnosti a sídla v Zábřehu" id="map-lokality" /></Fragment>
+  </PageHero>
+
+  <section class="lgroups" aria-labelledby="lgroups-title">
+    <div class="wrap">
+      <h2 id="lgroups-title" class="sr-only">Lokality podle regionů</h2>
+      <div class="lgroups__grid">
+        {groups.map((g, gi) => (
+          <div class="lgroups__col rv" style={`--i:${gi}`}>
+            <h3 class="lgroups__h">
+              {g.region ? <a href={link(`/lokality/${g.region.slug}`)}>{g.title}</a> : g.title}
+            </h3>
+            <ul>
+              {g.list.map((c) => (
+                <li>
+                  <a href={link(`/lokality/${c.slug}`)}>
+                    <span class="lgroups__name">{c.name}</span>
+                    <span class="lgroups__km">{c.km === 0 ? "sídlo" : cz(`${c.km} km · ${fmtMinutes(c.minutes)}`)}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Dojezd />
+
+  <section class="focuscards" aria-labelledby="focuscards-title">
+    <div class="wrap">
+      <h2 id="focuscards-title" class="t-h2 rv">Na co se specializujeme</h2>
+      <div class="focuscards__grid"><ServiceCards items={[{ slug: "kamerove-systemy" }, { slug: "zabezpeceni-jablotron" }, { slug: "rozvadece" }, { slug: "elektroinstalace" }]} cols={4} /></div>
+    </div>
+  </section>
+
+  <FormSection />
+  <PhoneCta />
+</Base>
+
+<style>
+  .focuscards { padding-block: var(--section); }
+  .focuscards__grid { margin-top: clamp(32px, 4vw, 48px); }
+  .lgroups { padding-bottom: var(--section); }
+  .lgroups__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 3vw, 48px); }
+  .lgroups__h { font-size: var(--fs-body); letter-spacing: -0.01em; color: var(--color-hey); margin-bottom: 14px; }
+  .lgroups__h a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
+  .lgroups ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .lgroups li a { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 60px; padding: 0 18px; background: var(--color-night-2); text-decoration: none; transition: background-color 160ms var(--ease-out); }
+  .lgroups__name { font-size: var(--fs-body); font-weight: 700; letter-spacing: -0.02em; }
+  .lgroups__km { color: var(--color-muted); font-variant-numeric: tabular-nums; white-space: nowrap; font-size: var(--fs-small); }
+  @media (hover: hover) and (pointer: fine) { .lgroups li a:hover { background: var(--color-night-3); } }
+  @media (max-width: 1023px) { .lgroups__grid { grid-template-columns: 1fr; } }
+</style>

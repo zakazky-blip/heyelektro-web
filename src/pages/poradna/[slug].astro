@@ -1,0 +1,142 @@
+---
+import { link, linkHtml } from "../../lib/url";
+import { Picture, Image } from "astro:assets";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import Faq from "../../components/Faq.astro";
+import FormSection from "../../components/FormSection.astro";
+import PhoneCta from "../../components/PhoneCta.astro";
+import { photos, type PhotoKey } from "../../data/images";
+import { serviceBySlug } from "../../data/services";
+import { site } from "../../data/site";
+import { articleSchema, breadcrumbSchema, faqSchema } from "../../lib/schema";
+import { cz } from "../../lib/typo";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("poradna");
+  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }));
+}
+
+const { post } = Astro.props as { post: CollectionEntry<"poradna"> };
+const { Content } = await render(post);
+// Vykreslený Markdown s interními odkazy doplněnými o podadresu webu
+const bodyHtml = post.rendered?.html ? linkHtml(post.rendered.html) : null;
+const d = post.data;
+const ph = photos[d.image as PhotoKey];
+const service = serviceBySlug(d.service);
+const others = (await getCollection("poradna")).filter((p) => p.id !== post.id).slice(0, 3);
+const crumbs = [
+  { name: "Úvod", path: "/" },
+  { name: "Poradna", path: "/poradna" },
+  { name: d.title, path: `/poradna/${post.id}` },
+];
+const fmt = (x: Date) => x.toLocaleDateString("cs-CZ", { day: "numeric", month: "long", year: "numeric" });
+const schema = [
+  articleSchema({ title: d.title, description: d.description, slug: post.id, date: d.date, updated: d.updated, image: new URL(ph.src.src, site.url).href }),
+  breadcrumbSchema(crumbs),
+  ...(d.faq.length ? [faqSchema(d.faq)] : []),
+];
+---
+
+<Base title={`${d.title} | Hey! Elektro`} description={d.description} schema={schema}>
+  <article class="post">
+    <header class="wrap post__head">
+      <div class="post__headtext">
+      <Breadcrumbs items={crumbs} />
+      <h1 class="post__title">{cz(d.title)}</h1>
+      <p class="post__meta">Hey! Elektro · aktualizováno <time datetime={(d.updated ?? d.date).toISOString().slice(0, 10)}>{fmt(d.updated ?? d.date)}</time></p>
+      <p class="post__perex">{cz(d.perex)}</p>
+      </div>
+      <div class="post__imgwrap"><Picture src={ph.src} alt={ph.alt} formats={["avif", "webp"]} widths={[480, 800, 1200]} sizes="(max-width: 1023px) 100vw, 40vw" class="post__img" loading="eager" fetchpriority="high" /></div>
+    </header>
+    <div class="wrap post__grid">
+      <div class="post__body">
+        {bodyHtml ? <Fragment set:html={bodyHtml} /> : <Content />}
+      </div>
+      <aside class="post__aside">
+        {service && (
+          <div class="post__card">
+            <p class="post__card-k">Související služba</p>
+            <a href={link(`/sluzby/${service.slug}`)} class="post__card-name">{service.name}</a>
+            <p class="post__card-t">{cz(service.short)}</p>
+            <a href={link(`/kontakt?sluzba=${service.slug}#poptavka`)} class="btn btn-hey" data-track="cta" data-cta="poradna-aside">Nezávazná poptávka</a>
+          </div>
+        )}
+      </aside>
+    </div>
+  </article>
+
+  {d.faq.length > 0 && <Faq faq={d.faq} title="Rychlé odpovědi" id="faq-clanek" />}
+
+  <section class="more" aria-labelledby="more-title">
+    <div class="wrap">
+      <h2 id="more-title" class="t-h2">Další články</h2>
+      <ul class="more__list">
+        {others.map((o) => {
+          const op = photos[o.data.image as PhotoKey];
+          return (
+            <li>
+              <a href={link(`/poradna/${o.id}`)}>
+                <span class="more__img"><Image src={op.src} alt="" widths={[360, 600]} sizes="(max-width: 767px) 100vw, 30vw" loading="lazy" /></span>
+                <span class="more__t">{cz(o.data.title)}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </section>
+
+  <FormSection service={d.service} />
+  <PhoneCta />
+</Base>
+
+<style>
+  .post { padding: clamp(28px, 4vw, 56px) 0 var(--section); }
+  .post__title { margin-top: clamp(40px, 6vw, 80px); font-size: var(--fs-display); letter-spacing: -0.045em; line-height: 1; max-width: 20ch; }
+  .post__meta { margin-top: 18px; color: var(--color-muted); font-size: var(--fs-small); }
+  .post__perex { margin-top: 28px; font-size: var(--fs-lead); line-height: 1.45; max-width: 52ch; }
+  .post__head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(16px, 2vw, 32px); align-items: end; }
+  .post__headtext { grid-column: 1 / span 8; }
+  .post__imgwrap { grid-column: 9 / span 4; aspect-ratio: 4 / 5; overflow: hidden; background: var(--color-night-2); }
+  .post__imgwrap :global(picture), .post :global(.post__img) { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .post__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(16px, 2vw, 32px); margin-top: clamp(48px, 6vw, 88px); align-items: start; }
+  .post__body { grid-column: 1 / span 8; max-width: 68ch; }
+  .post__aside { grid-column: 10 / span 3; position: sticky; top: 110px; }
+  .post__card { background: var(--color-night-2); padding: 24px; display: grid; gap: 10px; justify-items: start; }
+  .post__card-k { font-size: var(--fs-small); color: var(--color-muted); }
+  .post__card-name { font-size: var(--fs-lead); font-weight: 700; letter-spacing: -0.02em; text-decoration: none; }
+  .post__card-t { color: var(--color-muted); margin-bottom: 8px; }
+
+  .post__body :global(h2) { font-size: var(--fs-h3); letter-spacing: -0.03em; line-height: 1.12; margin: 2em 0 0.6em; }
+  .post__body :global(h3) { font-size: var(--fs-lead); letter-spacing: -0.02em; margin: 1.6em 0 0.5em; }
+  .post__body :global(h2:first-child) { margin-top: 0; }
+  .post__body :global(p + p) { margin-top: 1em; }
+  .post__body :global(ul), .post__body :global(ol) { padding-left: 1.3em; margin: 1em 0; display: grid; gap: 0.5em; }
+  .post__body :global(li::marker) { color: var(--color-hey); font-weight: 700; }
+  .post__body :global(a) { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.2em; text-decoration-color: var(--color-hey); }
+  .post__body :global(strong) { font-weight: 700; }
+  .post__body :global(em) { color: var(--color-muted); }
+  .post__body :global(table) { width: 100%; border-collapse: collapse; margin: 1.4em 0; font-size: 0.98rem; font-variant-numeric: tabular-nums; }
+  .post__body :global(th), .post__body :global(td) { text-align: left; padding: 12px 14px 12px 0; border-bottom: 1px solid var(--color-night-3); vertical-align: top; }
+  .post__body :global(th) { color: var(--color-muted); font-weight: 500; }
+
+  .more { padding-block: var(--section); background: var(--color-night-2); }
+  .more__list { list-style: none; padding: 0; margin: 28px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; font-weight: 700; }
+  .more__list a { display: grid; background: var(--color-night-3); text-decoration: none !important; height: 100%; }
+  .more__img { display: block; aspect-ratio: 3 / 2; overflow: hidden; }
+  .more__img :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .more__t { padding: 18px 20px 22px; font-size: var(--fs-lead); letter-spacing: -0.02em; line-height: 1.2; }
+  .more__list a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.2em; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); }
+
+  @media (max-width: 1023px) {
+    .post__body, .post__aside, .post__headtext, .post__imgwrap { grid-column: 1 / -1; }
+    .post__imgwrap { margin-top: 36px; aspect-ratio: 16 / 10; }
+    .more__list { grid-template-columns: 1fr; }
+    .post__aside { position: static; margin-top: 48px; }
+  }
+  @media (max-width: 640px) {
+    .post__body :global(table) { display: block; overflow-x: auto; white-space: nowrap; }
+  }
+</style>

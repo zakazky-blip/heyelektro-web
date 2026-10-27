@@ -1,0 +1,50 @@
+---
+// Sekce s poptávkovým formulářem: vlevo nadpis a kontakt, vpravo formulář. Na světlé ploše.
+import InquiryForm from "./InquiryForm.astro";
+import { site } from "../data/site";
+import { cz } from "../lib/typo";
+
+interface Props { title?: string; text?: string; service?: string; location?: string; id?: string }
+const {
+  title = "Nezávazná poptávka",
+  text = "Napište, co potřebujete zabezpečit nebo zapojit. Ozveme se vám, domluvíme obhlídku a pošleme nabídku.",
+  service,
+  location,
+  id = "poptavka",
+} = Astro.props;
+---
+
+<section class="fsec on-paper" aria-labelledby={`${id}-title`} data-hide-mbar>
+  <div class="wrap fsec__grid">
+    <div class="fsec__side">
+      <h2 id={`${id}-title`} class="t-h2 rv">{cz(title)}</h2>
+      <p class="fsec__text rv" style="--i:1">{cz(text)}</p>
+      <div class="fsec__contact rv" style="--i:2">
+        <a href={site.phone.href} class="fsec__phone" data-track="phone" aria-label={`Zavolat na ${site.phone.intl}`}>{site.phone.display}</a>
+        <p class="fsec__or">{cz("Raději voláte? Jsme na telefonu. E-mail:")} <a href={`mailto:${site.email}`} class="link-u" data-track="email">{site.email}</a></p>
+      </div>
+    </div>
+    <div class="fsec__form rv" style="--i:1">
+      <InquiryForm id={id} service={service} location={location} paper />
+    </div>
+  </div>
+</section>
+
+<style>
+  .fsec { background: var(--color-paper); color: var(--color-paper-ink); padding-block: var(--section); scroll-margin-top: 64px; }
+  .fsec__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(16px, 2vw, 32px); align-items: start; }
+  .fsec__side { grid-column: 1 / span 4; position: sticky; top: 110px; }
+  .fsec__form { grid-column: 6 / span 7; }
+  .fsec__text { margin-top: 24px; max-width: 36ch; }
+  .fsec__contact { margin-top: 40px; display: grid; gap: 8px; justify-items: start; }
+  .fsec__or { color: var(--color-paper-muted); }
+  .fsec__phone { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -0.03em; text-decoration: none; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  @media (hover: hover) and (pointer: fine) {
+    .fsec__phone:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 0.15em; text-decoration-color: var(--color-hey); }
+  }
+  @media (max-width: 1023px) {
+    .fsec__side, .fsec__form { grid-column: 1 / -1; }
+    .fsec__side { position: static; margin-bottom: 40px; }
+    .fsec__contact { margin-top: 24px; }
+  }
+</style>

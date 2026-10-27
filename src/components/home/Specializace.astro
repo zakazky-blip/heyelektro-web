@@ -1,0 +1,166 @@
+---
+import { link } from "../../lib/url";
+// Showcase: čtvercová fotka vlevo, vpravo záložky tří specializací. Bez JS se panely zobrazí pod sebou.
+import { Image } from "astro:assets";
+import { photos } from "../../data/images";
+import { cz } from "../../lib/typo";
+
+const panels = [
+  {
+    id: "spec-kamery",
+    tab: "Kamery",
+    title: "Kamery Dahua a Hikvision",
+    text: "Navrhneme, co má která kamera vidět, a natáhneme k ní jediný kabel. Záznam zůstává u vás doma, obraz máte v mobilu.",
+    points: ["Noční vidění", "Detekce osob a aut", "Aplikace DMSS a Hik-Connect"],
+    photo: photos.kamera,
+    href: "/sluzby/kamerove-systemy",
+    service: "kamerove-systemy",
+  },
+  {
+    id: "spec-alarmy",
+    tab: "Alarmy",
+    title: "Alarmy Jablotron",
+    text: "Jsme certifikovaný montážní partner Jablotron. Bezdrátové detektory namontujeme bez sekání, alarm ovládáte z aplikace MyJABLOTRON.",
+    points: ["Bezdrátově, bez prachu", "Hlídá i požár a vodu", "Napojení na pult"],
+    photo: photos.alarm,
+    href: "/sluzby/zabezpeceni-jablotron",
+    service: "zabezpeceni-jablotron",
+  },
+  {
+    id: "spec-rozvadece",
+    tab: "Rozvaděče",
+    title: "Přehledné rozvaděče",
+    text: "Starou pojistkovou skříň vyměníme za jističe a proudové chrániče. Připravíme rozvaděč na fotovoltaiku i wallbox a každý obvod popíšeme.",
+    points: ["Proudové chrániče", "Přepěťová ochrana", "Revizní zpráva"],
+    photo: photos.rozvadec,
+    href: "/sluzby/rozvadece",
+    service: "rozvadece",
+  },
+];
+---
+
+<section class="spec" aria-labelledby="spec-title" data-spec>
+  <div class="wrap spec__inner">
+    <div class="spec__media" aria-hidden="true">
+      {panels.map((p, i) => (
+        <Image
+          src={p.photo.src}
+          alt=""
+          widths={[400, 700, 1000]}
+          sizes="(max-width: 1023px) 92vw, 46vw"
+          class:list={["spec__img", { "is-active": i === 0 }]}
+          data-spec-img={p.id}
+          loading="lazy"
+        />
+      ))}
+    </div>
+
+    <div class="spec__body">
+      <h2 id="spec-title" class="t-h2 rv">Na co se specializujeme</h2>
+      <div class="spec__tabs rv" style="--i:1" role="tablist" aria-label="Specializace">
+        {panels.map((p, i) => (
+          <a href={`#${p.id}`} class="spec__tab" role="tab" id={`${p.id}-tab`} aria-controls={p.id} aria-selected={i === 0 ? "true" : "false"} data-spec-tab={p.id}>{p.tab}</a>
+        ))}
+      </div>
+
+      <div class="spec__panels">
+        {panels.map((p, i) => (
+          <article class:list={["spec__panel", { "is-active": i === 0 }]} id={p.id} role="tabpanel" aria-labelledby={`${p.id}-tab`} data-spec-panel>
+            <Image src={p.photo.src} alt={p.photo.alt} widths={[400, 700]} sizes="92vw" class="spec__img-inline" loading="lazy" />
+            <h3 class="spec__title">{cz(p.title)}</h3>
+            <p class="spec__text">{cz(p.text)}</p>
+            <ul class="spec__points">
+              {p.points.map((pt) => <li>{cz(pt)}</li>)}
+            </ul>
+            <div class="spec__cells">
+              <a href={link(`/kontakt?sluzba=${p.service}#poptavka`)} class="spec__cell spec__cell--hey" data-track="cta" data-cta={`spec-${p.service}`}>Poptat {p.tab.toLowerCase()}</a>
+              <a href={link(p.href)} class="spec__cell">Více o službě</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .spec { padding-block: var(--section); }
+  .spec__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: center; }
+  .spec__media { position: relative; aspect-ratio: 1; margin-right: 40px; background: var(--color-night-2); overflow: hidden; }
+  .spec__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.04); transition: opacity 500ms var(--ease-out), transform 900ms var(--ease-out); }
+  .spec__img.is-active { opacity: 1; transform: none; }
+
+  .spec__body { display: flex; flex-direction: column; padding: 0 0 0 clamp(8px, 2vw, 40px); }
+  .spec__tabs { display: flex; gap: 28px; margin-top: 40px; }
+  .spec__tab { font-size: var(--fs-body); font-weight: 700; color: var(--color-muted); text-decoration: none; padding: 6px 0; position: relative; }
+  .spec__tab[aria-selected="true"] { color: var(--color-ink); }
+  .spec__tab::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 3px; background: var(--color-hey); transform: scaleX(0); transform-origin: left; transition: transform 300ms var(--ease-out); }
+  .spec__tab[aria-selected="true"]::after { transform: scaleX(1); }
+
+  .spec__panels { flex: 1; display: grid; }
+  .spec__panel { display: flex; flex-direction: column; padding-top: clamp(36px, 5vh, 64px); }
+  .spec__img-inline { display: none; }
+  .spec__title { font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.03em; max-width: 20ch; }
+  .spec__text { margin-top: 20px; max-width: 40ch; }
+  .spec__points { list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--color-muted); }
+  .spec__points li::before { content: ""; display: inline-block; width: 8px; height: 8px; background: var(--color-hey); margin-right: 10px; transform: translateY(-2px) skewX(-15deg); }
+  .spec__cells { padding-top: 44px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .spec__cell { display: flex; align-items: center; padding: 0 22px; min-height: 72px; background: var(--color-night-2); font-weight: 700; text-decoration: none; transition: background-color 160ms var(--ease-out), transform 120ms var(--ease-out); }
+  .spec__cell:active { transform: scale(0.98); }
+  .spec__cell--hey { background: var(--color-hey); color: var(--color-night); }
+
+  /* Se skriptem se ukazuje vždy jen aktivní panel */
+  :global(html.js) .spec[data-ready] .spec__panel { grid-area: 1 / 1; visibility: hidden; opacity: 0; transform: translateY(12px); transition: opacity 360ms var(--ease-out), transform 420ms var(--ease-out), visibility 0s 360ms; }
+  :global(html.js) .spec[data-ready] .spec__panel.is-active { visibility: visible; opacity: 1; transform: none; transition-delay: 80ms, 80ms, 0s; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .spec__tab:hover { color: var(--color-ink); }
+    .spec__cell:hover { background: var(--color-night-3); }
+    .spec__cell--hey:hover { background: #ffd84d; }
+  }
+
+  @media (max-width: 1023px) {
+    .spec__inner { grid-template-columns: 1fr; min-height: 0; }
+    .spec__media { margin: 0 0 28px; }
+    .spec__body { padding: 0; }
+    .spec__body h2 { order: -2; margin-bottom: 20px; }
+    .spec__media { order: -1; }
+  }
+  @media (max-width: 767px) {
+    .spec__inner { display: flex; flex-direction: column; }
+    .spec__tabs { gap: 20px; margin-top: 20px; }
+    
+    .spec__panel { padding-top: 28px; }
+    .spec__cells { grid-template-columns: 1fr; padding-top: 32px; }
+    .spec__cell { min-height: 60px; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-spec]").forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLAnchorElement>("[data-spec-tab]")];
+    const panels = [...root.querySelectorAll<HTMLElement>("[data-spec-panel]")];
+    const imgs = [...root.querySelectorAll<HTMLElement>("[data-spec-img]")];
+    root.setAttribute("data-ready", "");
+    const select = (id: string, focus = false) => {
+      tabs.forEach((t) => {
+        const on = t.dataset.specTab === id;
+        t.setAttribute("aria-selected", String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus();
+      });
+      panels.forEach((p) => p.classList.toggle("is-active", p.id === id));
+      imgs.forEach((im) => im.classList.toggle("is-active", im.dataset.specImg === id));
+    };
+    tabs.forEach((t, i) => {
+      t.tabIndex = i === 0 ? 0 : -1;
+      t.addEventListener("click", (e) => { e.preventDefault(); select(t.dataset.specTab!); });
+      t.addEventListener("keydown", (e) => {
+        const dir = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!dir) return;
+        e.preventDefault();
+        select(tabs[(i + dir + tabs.length) % tabs.length].dataset.specTab!, true);
+      });
+    });
+  });
+</script>

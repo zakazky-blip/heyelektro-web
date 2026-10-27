@@ -1,0 +1,44 @@
+---
+// Seznam cookies. Po nasazení GTM a reklamních nástrojů seznam ověřte podle toho, co skutečně běží.
+import LegalPage from "../components/LegalPage.astro";
+import { cz } from "../lib/typo";
+const rows = [
+  { cat: "Nezbytné", name: "hey-consent", who: "Hey! Elektro", what: "Pamatuje si vaši volbu v liště cookies.", time: "Do smazání nebo změny volby (úložiště prohlížeče)" },
+  { cat: "Nezbytné", name: "hey-lead", who: "Hey! Elektro", what: "Číslo odeslané poptávky pro děkovnou stránku.", time: "Do zavření karty (sessionStorage)" },
+  { cat: "Marketingové", name: "hey-click", who: "Hey! Elektro", what: "Identifikátor prokliku z reklamy a parametry kampaně, které se odešlou s poptávkou.", time: "Do zavření karty (sessionStorage)" },
+  { cat: "Analytické", name: "_ga, _ga_*", who: "Google Analytics", what: "Rozlišení návštěvníků a měření návštěvnosti.", time: "2 roky" },
+  { cat: "Marketingové", name: "_gcl_au, _gcl_aw", who: "Google Ads", what: "Přiřazení poptávky k reklamě, ze které jste přišli.", time: "90 dní" },
+  { cat: "Marketingové", name: "sid, retargeting", who: "Seznam.cz (Sklik)", what: "Měření konverzí a remarketing v Sklik.", time: "Až 30 dní" },
+  { cat: "Marketingové", name: "_fbp", who: "Meta (Facebook, Instagram)", what: "Měření reklam a remarketing.", time: "90 dní" },
+];
+---
+
+<LegalPage
+  title="Zásady cookies"
+  description="Jaké cookies web heyelektro.cz používá, k čemu slouží a jak změnit svůj souhlas."
+  path="/cookies"
+  updated="26. 10. 2026"
+  lead="Které cookies web používá, k čemu slouží a jak svůj souhlas kdykoli změníte."
+>
+  <h2>Co jsou cookies</h2>
+  <p>{cz("Cookies jsou malé soubory, které web ukládá do vašeho prohlížeče. Nezbytné cookies web potřebuje, aby fungoval. Analytické a marketingové používáme jen tehdy, když k nim dáte souhlas v liště, která se zobrazí při první návštěvě.")}</p>
+
+  <h2>Změna souhlasu</h2>
+  <p>{cz("Souhlas můžete kdykoli změnit nebo odvolat:")} <button type="button" class="link-u legal-btn" data-consent-open>otevřít nastavení cookies</button>.</p>
+
+  <h2>Přehled cookies</h2>
+  <table>
+    <thead><tr><th>Kategorie</th><th>Název</th><th>Kdo</th><th>Účel</th><th>Doba</th></tr></thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr><td>{r.cat}</td><td><code>{r.name}</code></td><td>{r.who}</td><td>{cz(r.what)}</td><td>{cz(r.time)}</td></tr>
+      ))}
+    </tbody>
+  </table>
+  <p>{cz("Analytické a marketingové nástroje spouštíme přes Google Tag Manager v režimu Consent Mode v2: bez vašeho souhlasu neukládají žádné cookies.")}</p>
+</LegalPage>
+
+<style>
+  .legal-btn { background: none; border: 0; padding: 0; color: inherit; cursor: pointer; font: inherit; }
+  code { font-family: inherit; font-weight: 500; }
+</style>

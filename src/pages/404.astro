@@ -1,0 +1,39 @@
+---
+import { link } from "../lib/url";
+import Base from "../layouts/Base.astro";
+import { focusServices } from "../data/services";
+import { site } from "../data/site";
+import { Image } from "astro:assets";
+import { photos } from "../data/images";
+---
+
+<Base title="Stránka nenalezena | Hey! Elektro" description="Tahle stránka neexistuje. Zkuste úvodní stránku, služby nebo nám zavolejte." noindex>
+  <section class="e404">
+    <div class="wrap e404__grid">
+      <div>
+      <p class="e404__code" aria-hidden="true">404</p>
+      <h1 class="e404__title">Stránka nenalezena</h1>
+      <p class="e404__lead">Tady je zkrat: stránka, kterou hledáte, neexistuje nebo se přestěhovala. Zkuste některou z těchto:</p>
+      <ul class="e404__links">
+        <li><a href={link("/")} class="link-u">Úvodní stránka</a></li>
+        {focusServices.map((s) => <li><a href={link(`/sluzby/${s.slug}`)} class="link-u">{s.name}</a></li>)}
+        <li><a href={link("/kontakt")} class="link-u">Kontakt</a></li>
+      </ul>
+      <a href={site.phone.href} class="btn btn-hey" data-track="phone">Zavolat {site.phone.display}</a>
+      </div>
+      <div class="e404__img"><Image src={photos.rozvadecStary.src} alt={photos.rozvadecStary.alt} widths={[480, 800]} sizes="(max-width: 1023px) 100vw, 40vw" loading="eager" /></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .e404 { padding: clamp(48px, 8vw, 120px) 0 var(--section); }
+  .e404__grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
+  .e404__img { aspect-ratio: 4 / 5; overflow: hidden; background: var(--color-night-2); }
+  .e404__img :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  @media (max-width: 1023px) { .e404__grid { grid-template-columns: 1fr; } .e404__img { aspect-ratio: 16 / 10; } }
+  .e404__code { font-size: clamp(6rem, 3rem + 14vw, 16rem); font-weight: 700; letter-spacing: -0.06em; line-height: 0.85; color: var(--color-hey); }
+  .e404__title { margin-top: 24px; font-size: var(--fs-h2); }
+  .e404__lead { margin-top: 16px; max-width: 46ch; font-size: var(--fs-lead); line-height: 1.42; }
+  .e404__links { list-style: none; padding: 0; margin: 24px 0 36px; display: flex; flex-wrap: wrap; gap: 10px 24px; font-weight: 500; }
+</style>
