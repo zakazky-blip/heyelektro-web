@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>Spuštění webu {{HOST}}</title>
+<style>
+  @font-face { font-family: P; src: url("{{FONT_400}}") format("woff2"); font-weight: 400; unicode-range: U+0000-00FF; }
+  @font-face { font-family: P; src: url("{{FONT_400X}}") format("woff2"); font-weight: 400; unicode-range: U+0100-024F; }
+  @font-face { font-family: P; src: url("{{FONT_700}}") format("woff2"); font-weight: 700; unicode-range: U+0000-00FF; }
+  @font-face { font-family: P; src: url("{{FONT_700X}}") format("woff2"); font-weight: 700; unicode-range: U+0100-024F; }
+  @page { size: A4; margin: 18mm 18mm 20mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: P, Arial, sans-serif; font-size: 10.5pt; line-height: 1.55; color: #10161D; }
+  header { display: flex; align-items: center; gap: 18px; padding-bottom: 14px; border-bottom: 4px solid #FECA14; }
+  .logo { width: 74px; height: auto; flex: none; }
+  h1 { margin: 0; font-size: 22pt; line-height: 1.1; letter-spacing: -0.02em; }
+  header p { margin: 4px 0 0; color: #4a5562; }
+  h2 { display: flex; align-items: center; gap: 10px; margin: 22px 0 8px; font-size: 13.5pt; letter-spacing: -0.01em; break-after: avoid; }
+  h2 .n { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: #FECA14; font-size: 11pt; flex: none; }
+  section { break-inside: avoid; }
+  p { margin: 6px 0; }
+  ul, ol { margin: 6px 0; padding-left: 22px; }
+  li { margin: 4px 0; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 9.5pt; background: #f1efe9; padding: 1px 5px; border-radius: 3px; white-space: nowrap; }
+  .box { margin: 10px 0; padding: 10px 14px; background: #fff8dc; border-left: 4px solid #FECA14; }
+  .box p { margin: 3px 0; }
+  dl { margin: 6px 0; }
+  dt { font-weight: 700; margin-top: 8px; }
+  dd { margin: 2px 0 0; }
+</style>
+</head>
+<body>
+<header>
+  {{LOGO}}
+  <div>
+    <h1>Spuštění webu {{HOST}}</h1>
+    <p>Návod k nahrání hotového webu na webhosting</p>
+  </div>
+</header>
+
+<section>
+  <h2><span class="n">1</span>Co je v balíčku</h2>
+  <ul>
+    <li><code>{{ZIP}}</code>: hotový web. Jeho obsah se nahrává na hosting tak, jak je, nic se neupravuje ani neinstaluje.</li>
+    <li>Tento návod.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">2</span>Než začnete</h2>
+  <ul>
+    <li><strong>Doména {{BARE}} musí mířit na váš webhosting.</strong> Pokud máte doménu i hosting u stejné firmy, bývá to nastavené automaticky. Jinak u správce domény nastavte DNS podle pokynů hostingu.</li>
+    <li><strong>V administraci hostingu zapněte SSL certifikát</strong> pro <code>{{BARE}}</code> i <code>{{HOST}}</code> (většinou zdarma, často pod názvem Let's Encrypt). Web se sám přesměruje na zabezpečenou adresu https, proto musí být certifikát aktivní.</li>
+    <li>Připravte si <strong>přístup na FTP</strong> (adresa serveru, uživatel, heslo). Najdete ho v administraci hostingu.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Nahrání webu</h2>
+  <ol>
+    <li>Rozbalte <code>{{ZIP}}</code> do prázdné složky v počítači.</li>
+    <li>Připojte se k hostingu přes FTP, třeba zdarma programem <strong>FileZilla</strong> (filezilla-project.org). Některé hostingy mají i vlastního správce souborů v prohlížeči.</li>
+    <li>Na serveru otevřete složku webu pro {{BARE}}. Podle hostingu se jmenuje <code>www</code>, <code>public_html</code>, <code>htdocs</code> nebo <code>domains/{{BARE}}</code>. Pokud v ní je starý web nebo úvodní stránka hostingu, stáhněte si ho jako zálohu a smažte.</li>
+    <li>Nahrajte do ní <strong>celý obsah</strong> rozbalené složky, tedy soubory a složky přímo, ne složku navíc. Na serveru musí být hned <code>index.html</code>, <code>.htaccess</code>, složka <code>_astro</code> a další.</li>
+    <li>Zkontrolujte, že se nahrál i soubor <code>.htaccess</code>. Začíná tečkou, proto ho některé programy skrývají (například Finder na Macu). Ve FileZille je vidět normálně.</li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Kontrola</h2>
+  <ul>
+    <li>Otevřete <code>{{SITE}}</code>. Má se zobrazit úvodní stránka.</li>
+    <li>Klikněte na Služby → Rozvaděče. Adresa v prohlížeči má být <code>{{SITE}}/sluzby/rozvadece</code>.</li>
+    <li>Zadejte do prohlížeče <code>http://{{BARE}}</code>. Web vás má přesměrovat na <code>{{SITE}}</code>.</li>
+    <li>Odešlete zkušební poptávku (viz bod 5).</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Formulář poptávky</h2>
+  <p>Hned po nahrání formulář funguje tak, že po odeslání otevře návštěvníkovi e-mail s vyplněnou poptávkou na <code>{{EMAIL}}</code>. Aby poptávky chodily rovnou do schránky bez dalšího kroku:</p>
+  <ol>
+    <li>Na <strong>web3forms.com</strong> zadejte e-mail, kam mají poptávky chodit (<code>{{EMAIL}}</code>), a nechte si vytvořit přístupový klíč (Access Key). Služba je zdarma.</li>
+    <li>Klíč vám přijde e-mailem. Otevřete v rozbalené složce soubor <code>formular.json</code> (stačí Poznámkový blok) a vložte klíč mezi uvozovky:
+      <div class="box"><p><code>"web3formsKlic": "sem-vložte-klíč"</code></p></div>
+    </li>
+    <li>Soubor uložte, nahrajte ho znovu na server (přepište starý) a odešlete zkušební poptávku. Měla by dorazit do schránky během chvilky. Pokud ne, podívejte se i do spamu.</li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Po spuštění (doporučeno)</h2>
+  <ul>
+    <li><strong>Google Search Console</strong> (search.google.com/search-console): přidejte doménu {{BARE}} a v části Soubory Sitemap odešlete <code>{{SITE}}/sitemap-index.xml</code>. Google pak web najde rychleji.</li>
+    <li><strong>Firemní profil na Googlu</strong> (Google Business Profile): nastavte odkaz na <code>{{SITE}}</code>. Název, adresa a telefon mají být stejné jako na webu.</li>
+    <li><strong>Bing Webmaster Tools</strong>: web lze jedním kliknutím převzít ze Search Console.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">7</span>Když něco nefunguje</h2>
+  <dl>
+    <dt>Prohlížeč hlásí „Příliš mnoho přesměrování“</dt>
+    <dd>V administraci hostingu vypněte vlastní přesměrování domény (hlavně na adresu bez www). O přesměrování na <code>{{SITE}}</code> se stará soubor <code>.htaccess</code>.</dd>
+    <dt>Varování o nezabezpečeném připojení nebo certifikátu</dt>
+    <dd>SSL certifikát ještě není aktivní. Zapnutí může trvat několik minut až hodin.</dd>
+    <dt>Adresy podstránek končí lomítkem a web se nepřesměruje na https</dt>
+    <dd>Na serveru chybí soubor <code>.htaccess</code>. Web funguje i tak, ale nahrajte ho, ať jsou adresy správné.</dd>
+    <dt>Pořád se zobrazuje starý obsah</dt>
+    <dd>Obnovte stránku klávesami Ctrl + F5.</dd>
+  </dl>
+</section>
+
+<section>
+  <h2><span class="n">8</span>Jiné služby než klasický webhosting</h2>
+  <p>Web jde nahrát i na Netlify, Cloudflare Pages nebo Vercel: založte projekt a přetáhněte do něj rozbalenou složku. Soubor <code>.htaccess</code> tam nevadí, jen se nepoužije. Zabezpečení https zajistí služba sama, přesměrování z <code>{{BARE}}</code> na <code>{{HOST}}</code> se nastavuje v její administraci u domény.</p>
+</section>
+
+</body>
+</html>

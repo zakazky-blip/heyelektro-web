@@ -4,6 +4,8 @@ import { link } from "../lib/url";
 //   api       – Vercel: POST na /api/poptavka (Resend), bez JS server přesměruje na /dekujeme
 //   web3forms – GitHub Pages s klíčem PUBLIC_WEB3FORMS_KEY: odeslání přes Web3Forms
 //   mailto    – GitHub Pages bez klíče: otevře e-mail s vyplněnou poptávkou
+//   auto      – webhosting: klíč Web3Forms si web načte až při odeslání ze souboru /formular.json,
+//               takže ho zákazník vloží po nahrání bez nového buildu. Bez klíče se chová jako mailto.
 // Událost form_submitted jde do dataLayer až po potvrzeném odeslání (ne v režimu mailto).
 import { travelTable } from "../data/locations";
 import { cz } from "../lib/typo";
@@ -33,13 +35,14 @@ const fid = (n: string) => `${id}-${n}`;
 
 const target = import.meta.env.PUBLIC_DEPLOY_TARGET;
 const w3key = import.meta.env.PUBLIC_WEB3FORMS_KEY as string | undefined;
-const mode = target === "github" ? (w3key ? "web3forms" : "mailto") : "api";
+const mode = target === "vercel" ? "api" : w3key ? "web3forms" : target === "hosting" ? "auto" : "mailto";
 const origin = (Astro.site ?? new URL(site.url)).origin;
 const thanksUrl = origin + link("/dekujeme");
 const action = mode === "api" ? link("/api/poptavka") : mode === "web3forms" ? "https://api.web3forms.com/submit" : `mailto:${site.email}`;
+const configUrl = link("/formular.json");
 ---
 
-<form class:list={["iform", { "on-paper": paper }]} id={id} action={action} method="post" enctype={mode === "mailto" ? "text/plain" : undefined} novalidate data-inquiry data-mode={mode} data-thanks={link("/dekujeme")} data-email={site.email}>
+<form class:list={["iform", { "on-paper": paper }]} id={id} action={action} method="post" enctype={mode === "mailto" ? "text/plain" : undefined} novalidate data-inquiry data-mode={mode} data-thanks={link("/dekujeme")} data-email={site.email} data-config={mode === "auto" ? configUrl : undefined}>
   {mode === "web3forms" && (
     <Fragment>
       <input type="hidden" name="access_key" value={w3key} />
@@ -220,7 +223,16 @@ const action = mode === "api" ? link("/api/poptavka") : mode === "web3forms" ? "
       const ids = (window as unknown as { heyClickIds?: () => Record<string, string> }).heyClickIds?.() || {};
       for (const [k, val] of Object.entries(ids)) data.set(k, val);
 
-      const mode = form.dataset.mode;
+      let mode = form.dataset.mode;
+      let runtimeKey = "";
+      if (mode === "auto") {
+        // Klíč z /formular.json. Prázdný nebo nedostupný soubor = poptávka e-mailem.
+        try {
+          const cfg: { web3formsKlic?: string } = await fetch(form.dataset.config || "/formular.json", { cache: "no-store" }).then((r) => (r.ok ? r.json() : {}));
+          runtimeKey = String(cfg.web3formsKlic || "").trim();
+        } catch { runtimeKey = ""; }
+        mode = /^[0-9a-f-]{30,}$/i.test(runtimeKey) ? "web3forms" : "mailto";
+      }
       const thanks = form.dataset.thanks || "/dekujeme";
       const isBot = String(data.get("web") || "") !== "" || Date.now() - Number(data.get("t") || 0) < 3000;
 
@@ -254,6 +266,10 @@ const action = mode === "api" ? link("/api/poptavka") : mode === "web3forms" ? "
           const payload: Record<string, string> = {};
           for (const [k, val] of data.entries()) if (!["sluzby", "web", "t", "redirect"].includes(k)) payload[k] = String(val);
           payload.sluzby = data.getAll("sluzby").join(", ");
+          if (runtimeKey) {
+            payload.access_key = runtimeKey;
+            payload.from_name = "Web Hey! Elektro";
+          }
           payload.subject = `Poptávka: ${payload.sluzby || "obecná"}${payload.obec ? " – " + payload.obec : ""} (${payload.jmeno})`;
           const res = await fetch("https://api.web3forms.com/submit", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(payload) });
           const json = await res.json().catch(() => ({}));

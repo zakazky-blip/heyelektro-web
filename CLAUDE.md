@@ -19,6 +19,7 @@ Firemní web pro elektro firmu ze Zábřehu: kamerové systémy Dahua/Hikvision,
 - `npm run logo` – přegeneruje SVG loga z `scripts/logo-paths.json`
 - `npm run icons` – favicon, ikony, PNG loga
 - `npm run og` – sdílecí obrázky (OG) pro úvod, služby a lokality (po změně názvů služeb nebo lokalit)
+- `npm run balicek` – balíček pro ostrý web na běžném webhostingu: `predani/heyelektro-web.zip` (nahrát přes FTP) a návod v PDF; formulář si klíč Web3Forms načítá z `formular.json`
 - `node scripts/nbsp-markdown.mjs` – nezlomitelné mezery v článcích po úpravě
 
 ## Kde je obsah

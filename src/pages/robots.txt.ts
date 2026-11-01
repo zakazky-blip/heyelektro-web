@@ -8,7 +8,7 @@ export const GET: APIRoute = ({ site }) => {
     import.meta.env.PUBLIC_NOINDEX === "1"
       ? `# Náhled webu – neindexovat. Ostrá verze poběží na vlastní doméně.\nUser-agent: *\nDisallow: /\n`
       : `# Hey! Elektro
-# Vyhledávače i AI vyhledávání (ChatGPT, Perplexity, Claude, Gemini) mají přístup ke všemu kromě API.
+# Vyhledávače i AI vyhledávání (ChatGPT, Perplexity, Gemini a další) mají přístup ke všemu kromě API.
 # Pokud nechcete, aby se obsah používal k trénování AI modelů, odkomentujte blok níže.
 # Vyhledávání a citace v AI odpovědích tím zůstanou zachované.
 
@@ -18,8 +18,6 @@ Disallow: ${base}/api/
 Disallow: ${base}/dekujeme
 
 # User-agent: GPTBot
-# Disallow: /
-# User-agent: ClaudeBot
 # Disallow: /
 # User-agent: Google-Extended
 # Disallow: /

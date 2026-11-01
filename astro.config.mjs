@@ -7,10 +7,13 @@ import tailwindcss from "@tailwindcss/vite";
 // Kam se web nasazuje:
 //   DEPLOY_TARGET=vercel (výchozí) – vlastní doména, formulář přes /api/poptavka a Resend
 //   DEPLOY_TARGET=github – GitHub Pages, čistě statický web, formulář přes Web3Forms nebo e-mail
+//   DEPLOY_TARGET=hosting – běžný webhosting (FTP), statický web s čistými URL přes .htaccess (npm run balicek)
 const TARGET = process.env.DEPLOY_TARGET || "vercel";
 const SITE = process.env.SITE_URL || "https://www.heyelektro.cz";
 const BASE = process.env.BASE_PATH || "/";
 const isVercel = TARGET === "vercel";
+// Čisté adresy bez lomítka na konci (/sluzby/rozvadece). GitHub Pages je neumí, tam zůstávají složky.
+const cleanUrls = TARGET !== "github";
 
 // API pro formulář existuje jen na Vercelu; GitHub Pages umí jen statické soubory.
 /** @type {import("astro").AstroIntegration} */
@@ -26,8 +29,8 @@ const formApi = {
 export default defineConfig({
   site: SITE,
   base: BASE,
-  trailingSlash: isVercel ? "never" : "ignore",
-  build: { format: isVercel ? "file" : "directory" },
+  trailingSlash: cleanUrls ? "never" : "ignore",
+  build: { format: cleanUrls ? "file" : "directory" },
   compressHTML: true,
   adapter: isVercel
     ? vercel({
